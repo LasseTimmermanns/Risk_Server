@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-RiskServerApplication<risk_server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "de.lasse.risk_server.RiskServerApplication",
+            "projectName": "risk_server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
