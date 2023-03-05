@@ -1,6 +1,6 @@
 [
     {"alaska": ["northwest_territory", "alberta", "kamchatka"]},
-    {"northwest_territoy": ["alaska", "alberta", "ontario", "greenland"]},
+    {"northwest_territory": ["alaska", "alberta", "ontario", "greenland"]},
     {"greenland": ["northwest_territory", "ontario", "quebec", "iceland"]},
     {"alberta": ["alaska", "northwest_territory", "ontario", "western_united_states"]},
     {"ontario": ["alberta", "northwest_territory", "greenland", "quebec", "western_united_states", "eastern_united_states"]},
