@@ -22,7 +22,7 @@ public class MapController {
     @ResponseBody
     public ResponseEntity<String> getMap(@PathVariable String map_name) {
         try {
-            String body = FileUtils.getFileAsString("static/maps/jsons/" + map_name + ".json");
+            String body = FileUtils.getFileAsString("static/maps/jsons/normal/" + map_name + ".json");
             return new ResponseEntity<String>(body, HttpStatus.ACCEPTED);
         } catch (IOException e) {
             System.out.println("Couldnt find " + map_name);

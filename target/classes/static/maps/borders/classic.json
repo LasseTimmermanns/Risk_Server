@@ -5,6 +5,9 @@
     {"alberta": ["alaska", "northwest_territory", "ontario", "western_united_states"]},
     {"ontario": ["alberta", "northwest_territory", "greenland", "quebec", "western_united_states", "eastern_united_states"]},
     {"central_america": ["eastern_united_states", "western_united_states", "venezuela"]},
+    {"quebec": ["greenland", "ontario", "eastern_united_states"]},
+    {"eastern_united_states": ["quebec", "central_america", "ontario", "western_united_states"]},
+    {"western_united_states": ["central_america", "eastern_united_states", "ontario", "alberta"]},
 
     {"venezuela": ["central_america", "peru", "brazil"]},
     {"peru": ["brazil", "venezuela", "argentina"]},

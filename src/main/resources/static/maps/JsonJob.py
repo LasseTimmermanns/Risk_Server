@@ -1,8 +1,9 @@
-import re, json
+import re, json, pathlib
 from typing import List, Tuple, Dict
 
 
 name_id_dict : Dict[str, int] = {}
+parent_dir = pathlib.Path(__file__).parent.resolve()
 
 def get_file_as_string(filepath: str):
     with open(filepath, "r") as file:
@@ -10,11 +11,21 @@ def get_file_as_string(filepath: str):
 
 class Territory:
     territories = []
-    def __init__(self, name, path, width, height, id):
+    def __init__(self, name, path, id, x, y, width, height):
         self.name = name
         self.path = path
+        self.id = id
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
+        name_id_dict[name] = id
+        Territory.territories.append(self)
+        print("Added Territory", name)
+
+    def __init__(self, name, path, id):
+        self.name = name
+        self.path = path
         self.id = id
         name_id_dict[name] = id
         Territory.territories.append(self)
@@ -29,7 +40,6 @@ class Territory:
     def get_by_id(id):
         return Territory.territories[id]
     
-
     def __str__(self):
         return self.name + " " + str(self.id)
     
@@ -39,7 +49,7 @@ class Territory:
 
 
 # name, path, id
-def generate_territories(json: str) -> List[Territory]:
+def generate_territories(json: str, normalize) -> List[Territory]:
     territories = []    
     general_regex = r"<path id=\"([^\"]*)\" .+?(?=d=\")d=\"([^\"]*)\""
     matches = re.finditer(general_regex, json, re.MULTILINE)
@@ -47,9 +57,12 @@ def generate_territories(json: str) -> List[Territory]:
         name = match.group(1)
         path_str = match.group(2)
 
-        normalized_path, path_width, path_height = normalize_svg_path(path_str)
-        # normalized_path = normalized_path.split(" ")
-        territories.append(Territory(name, normalized_path, path_width, path_height, matchNum - 1))
+        if normalize:
+            normalized_path, path_x, path_y, path_width, path_height = normalize_svg_path(path_str)
+            # normalized_path = normalized_path.split(" ")
+            territories.append(Territory(name, normalized_path, matchNum - 1, path_x, path_y, path_width, path_height))
+        else:
+            territories.append(Territory(name, path_str, matchNum - 1))
 
     return territories
 
@@ -95,7 +108,7 @@ def normalize_svg_path(path):
                 args[i] = str(round(float(args[i]) - y_offset, 2))
         normalized_path += ' '.join(args) + ' '
     
-    return normalized_path.strip(), width, height
+    return normalized_path.strip(), x_offset, y_offset, width, height
 
 def get_borders(json_str : str):
     json_array = json.loads(json_str)
@@ -110,13 +123,13 @@ def get_borders(json_str : str):
             borders.append(name_id_dict[border_name])
         Territory.get_by_id(id).set_borders(borders)
 
-def get_json_obj(map_name: str):
-    jsonInput = get_file_as_string(f"svgs/{map_name}.svg")
-    territories : List[Territory] = generate_territories(jsonInput)
+def get_json_obj(map_name: str, normalize):
+    jsonInput = get_file_as_string(f"{parent_dir}/svgs/{map_name}.svg")
+    territories : List[Territory] = generate_territories(jsonInput, normalize)
 
     width, height = get_dimensinos(jsonInput)
 
-    border_json = get_file_as_string(f"borders/{map_name}.json")
+    border_json = get_file_as_string(f"{parent_dir}/borders/{map_name}.json")
     get_borders(border_json)
 
     territory_jsons : List[str] = [t.to_dict() for t in territories]
@@ -127,8 +140,10 @@ def get_json_obj(map_name: str):
 
 if __name__ == "__main__":
     map_name = "classic"
-    my_str = get_json_obj(map_name)
-
-    with open(f"jsons/{map_name}.json", "w") as file:
+    normalize = False
+    my_str = get_json_obj(map_name, normalize)
+    
+    mode_str = "cutted" if normalize else "normal"
+    with open(f"{parent_dir}/jsons/{mode_str}/{map_name}.json", "w") as file:
         file.write(my_str)
         
