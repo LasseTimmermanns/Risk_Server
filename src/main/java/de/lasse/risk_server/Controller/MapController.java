@@ -1,7 +1,5 @@
 package de.lasse.risk_server.Controller;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.lasse.risk_server.Database.Maps.Map;
 import de.lasse.risk_server.Database.Maps.MapInterfaceRepository;
-import de.lasse.risk_server.Utils.FileUtils;
 
 @RestController
 @CrossOrigin
@@ -28,7 +25,7 @@ public class MapController {
     @ResponseBody
     public ResponseEntity<String> getMap(@PathVariable String map_name) {
         try {
-            Map map = mapInterfaceRepository.findMapByName("classic");
+            Map map = mapInterfaceRepository.findMapByName(map_name);
             return new ResponseEntity<String>(map.toJsonObject().toString(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
             System.out.println("Couldnt find " + map_name);
