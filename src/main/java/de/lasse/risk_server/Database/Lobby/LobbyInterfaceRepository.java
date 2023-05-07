@@ -8,4 +8,6 @@ public interface LobbyInterfaceRepository extends MongoRepository<Lobby, String>
 
     public List<Lobby> findAll();
 
+    public Lobby findByGameId(String gameId);
+
 }
