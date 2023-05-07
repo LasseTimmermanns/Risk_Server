@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.json.JsonObject;
 import org.json.JSONObject;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -29,7 +28,6 @@ public class GamesHandler extends TextWebSocketHandler {
             session.sendMessage(message);
         } else {
             String text = message.getPayload();
-            String response = String.format("%s: %s", username, text);
             JSONObject msg = new JSONObject();
             msg.put("action", "move");
             msg.put("from", 0);
@@ -46,4 +44,8 @@ public class GamesHandler extends TextWebSocketHandler {
         }
     }
 
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        sessions.remove(session);
+    }
 }
