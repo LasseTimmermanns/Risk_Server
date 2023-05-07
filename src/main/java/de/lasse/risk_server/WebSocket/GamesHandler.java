@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.json.JsonObject;
+import org.json.JSONObject;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -22,15 +25,22 @@ public class GamesHandler extends TextWebSocketHandler {
         String username = (String) session.getAttributes().get("username");
         if (username == null) {
             session.getAttributes().put("username", message.getPayload());
-            session.sendMessage(new TextMessage("You have joined the chat."));
+            // session.sendMessage(new TextMessage("You have joined the chat."));
+            session.sendMessage(message);
         } else {
             String text = message.getPayload();
             String response = String.format("%s: %s", username, text);
-            broadcast(new TextMessage(response));
+            JSONObject msg = new JSONObject();
+            msg.put("action", "move");
+            msg.put("from", 0);
+            msg.put("to", 1);
+            msg.put("msg", text);
+            broadcast(msg);
         }
     }
 
-    private void broadcast(TextMessage message) throws IOException {
+    private void broadcast(JSONObject json) throws IOException {
+        TextMessage message = new TextMessage(json.toString());
         for (WebSocketSession session : sessions) {
             session.sendMessage(message);
         }
