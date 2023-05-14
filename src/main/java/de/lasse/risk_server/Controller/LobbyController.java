@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +46,13 @@ public class LobbyController {
 
         System.out.println("No Lobby found with GameId=" + game_id);
         return new ResponseEntity<String>("Lobby not Found", HttpStatus.NOT_FOUND);
+    }
+
+    @RequestMapping(value = "/lobbies/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> createLobby(@RequestBody Lobby lobby) {
+        System.out.println(lobby.toJsonObject().toString());
+        return new ResponseEntity<String>("Nice", HttpStatus.ACCEPTED);
     }
 
 }
