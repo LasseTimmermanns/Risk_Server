@@ -10,7 +10,7 @@ import nonapi.io.github.classgraph.json.Id;
 public class Lobby {
 
     @Id
-    private String gameId;
+    private String id;
 
     private String mapId;
 
@@ -18,7 +18,7 @@ public class Lobby {
 
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
-        out.put("gameId", gameId);
+        out.put("id", id);
         out.put("mapId", mapId);
 
         JSONArray playerArray = new JSONArray();
