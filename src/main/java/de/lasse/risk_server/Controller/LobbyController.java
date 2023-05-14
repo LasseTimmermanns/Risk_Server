@@ -25,7 +25,7 @@ public class LobbyController {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
-    @RequestMapping(value = "/lobbies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/lobbies/getall", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getLobbies() {
         JSONArray out = new JSONArray();
