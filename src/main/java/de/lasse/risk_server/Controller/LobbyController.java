@@ -1,6 +1,7 @@
 package de.lasse.risk_server.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.lasse.risk_server.Database.DisplayLobby.DisplayLobby;
+import de.lasse.risk_server.Database.DisplayLobby.DisplayLobbyRepository;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
 
@@ -25,24 +28,27 @@ public class LobbyController {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
+    @Autowired
+    DisplayLobbyRepository displayLobbyRepository;
+
     @RequestMapping(value = "/lobbies/getall", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getLobbies() {
         JSONArray out = new JSONArray();
-        List<Lobby> lobbies = lobbyInterfaceRepository.findAll();
-        for (Lobby lobby : lobbies)
+        List<DisplayLobby> lobbies = displayLobbyRepository.getAll();
+        for (DisplayLobby lobby : lobbies)
             out.put(lobby.toJsonObject());
 
         return new ResponseEntity<String>(out.toString(), HttpStatus.ACCEPTED);
     }
 
-    @RequestMapping(value = "/lobbies/{game_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/lobbies/get/{game_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getLobby(@PathVariable String game_id) {
-        Lobby lobby = lobbyInterfaceRepository.findByGameId(game_id);
+        Optional<Lobby> lobby = lobbyInterfaceRepository.findById(game_id);
 
-        if (lobby != null)
-            return new ResponseEntity<String>(lobby.toJsonObject().toString(), HttpStatus.ACCEPTED);
+        if (lobby.isPresent())
+            return new ResponseEntity<String>(lobby.get().toJsonObject().toString(), HttpStatus.ACCEPTED);
 
         System.out.println("No Lobby found with GameId=" + game_id);
         return new ResponseEntity<String>("Lobby not Found", HttpStatus.NOT_FOUND);
