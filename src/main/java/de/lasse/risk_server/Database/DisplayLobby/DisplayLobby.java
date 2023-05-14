@@ -1,8 +1,7 @@
-package de.lasse.risk_server.Database.Lobby;
+package de.lasse.risk_server.Database.DisplayLobby;
 
 import org.json.JSONObject;
-
-import nonapi.io.github.classgraph.json.Id;
+import org.springframework.data.annotation.Id;
 
 public class DisplayLobby {
 
