@@ -12,6 +12,8 @@ public class DisplayLobby {
 
     private int maxPlayers;
 
+    private String host;
+
     private String mapId;
 
     public JSONObject toJsonObject() {
@@ -20,6 +22,7 @@ public class DisplayLobby {
         out.put("mapId", mapId);
         out.put("playerCount", playerCount);
         out.put("maxPlayers", maxPlayers);
+        out.put("host", host);
         return out;
     }
 }

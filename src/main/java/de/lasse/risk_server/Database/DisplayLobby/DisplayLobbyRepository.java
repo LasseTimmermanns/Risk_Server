@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,10 @@ public class DisplayLobbyRepository {
     public List<DisplayLobby> getAll() {
         TypedAggregation<DisplayLobby> aggregation = Aggregation.newAggregation(
                 DisplayLobby.class,
-                Aggregation.project().and("players").size().as("playerCount"));
+                Aggregation.project()
+                        .and("players").size().as("playerCount")
+                        .and(ArrayOperators.ArrayElemAt.arrayOf("players").elementAt(0)).as("firstPlayer"),
+                Aggregation.project().and("firstPlayer.name").as("host"));
 
         AggregationResults<DisplayLobby> result = this.mongoTemplate.aggregate(aggregation, "lobbies",
                 DisplayLobby.class);
