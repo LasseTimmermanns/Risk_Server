@@ -9,14 +9,24 @@ public class LobbyPlayer {
     @Id
     private String id;
 
-    private String name, color;
+    private String name, token;
+
+    private Color color;
 
     private int position;
+
+    public LobbyPlayer(String name, String token, Color color, int position) {
+        this.name = name;
+        this.token = token;
+        this.color = color;
+        this.position = position;
+    }
 
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
         out.put("name", name);
-        out.put("color", color);
+        out.put("token", token);
+        out.put("color", color.toJsonObject());
         out.put("position", position);
         return out;
     }

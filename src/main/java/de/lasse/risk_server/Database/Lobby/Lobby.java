@@ -10,11 +10,17 @@ import nonapi.io.github.classgraph.json.Id;
 public class Lobby {
 
     @Id
-    private String id;
+    public String id;
 
-    private String mapId;
+    public int maxPlayers;
 
-    private LobbyPlayer[] players;
+    public int turnTimer;
+
+    public String cardBonus;
+
+    public String mapId;
+
+    public LobbyPlayer[] players;
 
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
