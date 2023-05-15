@@ -1,4 +1,4 @@
-package de.lasse.risk_server.WebSocket;
+package de.lasse.risk_server.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(lobbyWebSocketHandler(), "/players").setAllowedOrigins("*");
+        registry.addHandler(lobbyWebSocketHandler(), "/lobby").setAllowedOrigins("*");
     }
 
     @Bean
