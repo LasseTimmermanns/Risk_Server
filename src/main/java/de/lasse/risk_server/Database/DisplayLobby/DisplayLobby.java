@@ -2,7 +2,9 @@ package de.lasse.risk_server.Database.DisplayLobby;
 
 import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "lobbies")
 public class DisplayLobby {
 
     @Id
