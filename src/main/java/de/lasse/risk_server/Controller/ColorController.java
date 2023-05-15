@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.lasse.risk_server.Database.Settings.Color;
+import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Settings.ColorInterfaceRepository;
 
 @RestController
