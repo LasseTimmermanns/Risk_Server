@@ -1,4 +1,4 @@
-package de.lasse.risk_server.Controller;
+package de.lasse.risk_server.Lobby;
 
 import java.util.List;
 import java.util.Optional;
