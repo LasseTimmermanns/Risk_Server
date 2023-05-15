@@ -7,18 +7,20 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import de.lasse.risk_server.Lobby.LobbyHandler;
+
 @Configuration
 @EnableWebSocket
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatWebSocketHandler(), "/chat").setAllowedOrigins("*");
+        registry.addHandler(lobbyWebSocketHandler(), "/players").setAllowedOrigins("*");
     }
 
     @Bean
-    public WebSocketHandler chatWebSocketHandler() {
-        return new GamesHandler();
+    public WebSocketHandler lobbyWebSocketHandler() {
+        return new LobbyHandler();
     }
 
 }
