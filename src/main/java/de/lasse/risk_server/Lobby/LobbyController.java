@@ -20,6 +20,7 @@ import de.lasse.risk_server.Database.DisplayLobby.DisplayLobby;
 import de.lasse.risk_server.Database.DisplayLobby.DisplayLobbyRepository;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
+import de.lasse.risk_server.Utils.TokenGenerator;
 
 @RestController
 @CrossOrigin
@@ -58,7 +59,8 @@ public class LobbyController {
     @ResponseBody
     public ResponseEntity<String> createLobby(@RequestBody Lobby lobby) {
         System.out.println(lobby.toJsonObject().toString());
-        return new ResponseEntity<String>("Nice", HttpStatus.ACCEPTED);
+        System.out.println("Creating Game");
+        return new ResponseEntity<String>(TokenGenerator.generateToken(), HttpStatus.ACCEPTED);
     }
 
 }
