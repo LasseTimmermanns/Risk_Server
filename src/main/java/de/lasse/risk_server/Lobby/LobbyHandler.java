@@ -67,7 +67,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         lobby.players[position] = lobbyPlayer;
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(new TextMessage("token:" + token));
+        session.sendMessage(new TextMessage("{token:" + token + "}"));
     }
 
     @Override
