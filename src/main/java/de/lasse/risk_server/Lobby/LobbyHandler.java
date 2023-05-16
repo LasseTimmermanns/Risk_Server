@@ -67,7 +67,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         lobby.players[position] = lobbyPlayer;
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(new TextMessage("{token:" + token + "}", false));
+        session.sendMessage(generateTextMessageResponse("token_granted", new JSONObject("{'token':'" + token + "'}")));
         session.sendMessage(generateTextMessageResponse("join_accepted", lobby.toJsonObject()));
         broadcast(generateTextMessageResponse("join", lobbyPlayer.toJsonObject()), lobbyid);
         sessions.get(lobbyid).add(session);
