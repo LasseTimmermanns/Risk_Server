@@ -9,8 +9,10 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.bson.json.JsonObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -39,25 +41,23 @@ public class LobbyHandler extends TextWebSocketHandler {
         String playername = QueryUtil.getQueryValue("playername", session.getUri().getQuery());
 
         if (lobbyid == null || playername == null) {
-            session.sendMessage(new TextMessage("Bad Request", true));
+            session.sendMessage(generateDeclineMessage("Not enough data provided"));
             session.close();
             return;
         }
 
         Lobby lobby = lobbyInterfaceRepository.findById(lobbyid).orElse(null);
         if (lobby == null || !sessions.containsKey(lobbyid)) {
-            session.sendMessage(new TextMessage("Lobby not found", true));
+            session.sendMessage(generateDeclineMessage("Lobby not found"));
             session.close();
             return;
         }
 
         if (lobby.players.length >= lobby.maxPlayers) {
-            session.sendMessage(new TextMessage("Lobby is full", true));
+            session.sendMessage(generateDeclineMessage("Lobby is full"));
             session.close();
             return;
         }
-
-        sessions.get(lobbyid).add(session);
 
         int position = lobby.players.length;
         String token = TokenGenerator.generateToken();
@@ -67,31 +67,33 @@ public class LobbyHandler extends TextWebSocketHandler {
         lobby.players[position] = lobbyPlayer;
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(new TextMessage("{token:" + token + "}"));
+        session.sendMessage(new TextMessage("{token:" + token + "}", false));
+        session.sendMessage(generateTextMessageResponse("join_accepted", lobby.toJsonObject()));
+        broadcast(generateTextMessageResponse("join", lobbyPlayer.toJsonObject()), lobbyid);
+        sessions.get(lobbyid).add(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String username = (String) session.getAttributes().get("username");
+        // String username = (String) session.getAttributes().get("username");
 
-        if (username == null) {
-            session.getAttributes().put("username", message.getPayload());
-            // session.sendMessage(new TextMessage("You have joined the chat."));
-            session.sendMessage(message);
-        } else {
-            String text = message.getPayload();
-            JSONObject msg = new JSONObject();
-            msg.put("action", "move");
-            msg.put("from", 0);
-            msg.put("to", 1);
-            msg.put("msg", text);
-            broadcast(msg);
-        }
+        // if (username == null) {
+        // session.getAttributes().put("username", message.getPayload());
+        // // session.sendMessage(new TextMessage("You have joined the chat."));
+        // session.sendMessage(message);
+        // } else {
+        // String text = message.getPayload();
+        // JSONObject msg = new JSONObject();
+        // msg.put("action", "move");
+        // msg.put("from", 0);
+        // msg.put("to", 1);
+        // msg.put("msg", text);
+        // broadcast(msg);
+        // }
     }
 
-    private void broadcast(JSONObject json) throws IOException {
-        TextMessage message = new TextMessage(json.toString());
-        for (WebSocketSession session : sessions.get("hey")) {
+    private void broadcast(TextMessage message, String lobbyid) throws IOException {
+        for (WebSocketSession session : sessions.get(lobbyid)) {
             session.sendMessage(message);
         }
     }
@@ -99,5 +101,16 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
+    }
+
+    private TextMessage generateTextMessageResponse(String event, JSONObject data) {
+        JSONObject out = new JSONObject();
+        out.put("event", event);
+        out.put("data", data);
+        return new TextMessage(out.toString());
+    }
+
+    private TextMessage generateDeclineMessage(String reason) {
+        return generateTextMessageResponse("declined", new JSONObject("{'reason': '" + reason + "'}"));
     }
 }
