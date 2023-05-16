@@ -38,6 +38,9 @@ public class Lobby {
         JSONObject out = new JSONObject();
         out.put("id", id);
         out.put("mapId", mapId);
+        out.put("maxPlayers", maxPlayers);
+        out.put("turnTimer", turnTimer);
+        out.put("cardBonus", cardBonus);
 
         JSONArray playerArray = new JSONArray();
         for (LobbyPlayer player : players) {

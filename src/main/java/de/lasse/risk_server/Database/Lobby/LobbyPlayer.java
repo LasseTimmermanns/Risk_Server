@@ -25,7 +25,6 @@ public class LobbyPlayer {
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
         out.put("name", name);
-        out.put("token", token);
         out.put("color", color.toJsonObject());
         out.put("position", position);
         return out;
