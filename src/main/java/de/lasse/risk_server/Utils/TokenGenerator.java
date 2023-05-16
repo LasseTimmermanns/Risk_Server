@@ -1,14 +1,14 @@
 package de.lasse.risk_server.Utils;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class TokenGenerator {
 
     public static String generateToken() {
-        byte[] array = new byte[16]; // length is bounded by 7
+        byte[] array = new byte[16];
         new Random().nextBytes(array);
-        return new String(array, Charset.forName("UTF-8"));
+        return new String(array, StandardCharsets.US_ASCII);
     }
 
 }
