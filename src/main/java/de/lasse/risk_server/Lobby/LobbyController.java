@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,14 +55,15 @@ public class LobbyController {
         return new ResponseEntity<String>("Lobby not Found", HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/lobbies/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/lobbies/create", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createLobby() {
         Lobby l = Lobby.generateDefault();
         lobbyInterfaceRepository.save(l);
 
         LobbyHandler.sessions.put(l.id, new ArrayList<>());
-        return new ResponseEntity<String>(l.id, HttpStatus.ACCEPTED);
+        JSONObject out = new JSONObject("{'lobbyid':'" + l.id + "'}");
+        return new ResponseEntity<String>(out.toString(), HttpStatus.ACCEPTED);
     }
 
 }
