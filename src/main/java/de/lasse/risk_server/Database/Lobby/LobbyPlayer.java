@@ -7,13 +7,13 @@ import nonapi.io.github.classgraph.json.Id;
 public class LobbyPlayer {
 
     @Id
-    private String id;
+    public String id;
 
-    private String name, token;
+    public String name, token;
 
-    private Color color;
+    public Color color;
 
-    private int position;
+    public int position;
 
     public LobbyPlayer(String name, String token, Color color, int position) {
         this.name = name;
