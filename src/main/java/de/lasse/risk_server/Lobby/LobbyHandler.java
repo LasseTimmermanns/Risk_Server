@@ -1,25 +1,18 @@
 package de.lasse.risk_server.Lobby;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.bson.json.JsonObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.yaml.snakeyaml.util.ArrayUtils;
 
 import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Lobby.Lobby;
@@ -76,21 +69,6 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // String username = (String) session.getAttributes().get("username");
-
-        // if (username == null) {
-        // session.getAttributes().put("username", message.getPayload());
-        // // session.sendMessage(new TextMessage("You have joined the chat."));
-        // session.sendMessage(message);
-        // } else {
-        // String text = message.getPayload();
-        // JSONObject msg = new JSONObject();
-        // msg.put("action", "move");
-        // msg.put("from", 0);
-        // msg.put("to", 1);
-        // msg.put("msg", text);
-        // broadcast(msg);
-        // }
     }
 
     private void broadcast(TextMessage message, String lobbyid) throws IOException {
