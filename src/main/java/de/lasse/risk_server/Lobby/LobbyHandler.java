@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,9 +68,9 @@ public class LobbyHandler extends TextWebSocketHandler {
         lobby.players[position] = lobbyPlayer;
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(generateTextMessageResponse("token_granted", new JSONObject("{'token':'" + token + "'}")));
-        session.sendMessage(generateTextMessageResponse("join_accepted", lobby.toJsonObject()));
-        broadcast(generateTextMessageResponse("join", lobbyPlayer.toJsonObject()), lobbyid);
+        session.sendMessage(generateTextMessage("token_granted", new JSONObject("{'token':'" + token + "'}")));
+        session.sendMessage(generateTextMessage("join_accepted", lobby.toJsonObject()));
+        broadcast(generateTextMessage("join", lobbyPlayer.toJsonObject()), lobbyid);
         sessions.get(lobbyid).add(session);
     }
 
@@ -100,17 +101,44 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session);
+        String sessionId = session.getId();
+        for (Entry<String, List<WebSocketSession>> lobbyEntry : sessions.entrySet()) {
+            for (int i = 0; i < lobbyEntry.getValue().size(); i++) {
+                WebSocketSession playerSession = lobbyEntry.getValue().get(i);
+                if (!sessionId.equals(playerSession.getId()))
+                    continue;
+                Lobby lobby = lobbyInterfaceRepository.findById(lobbyEntry.getKey()).orElseThrow();
+                LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
+                LobbyPlayer player = lobby.players[i];
+
+                int appendIndex = 0;
+                for (int x = 0; x < lobby.players.length; x++) {
+                    if (x == i)
+                        continue;
+
+                    newLobbyPlayers[appendIndex] = lobby.players[i];
+                    appendIndex++;
+                }
+                lobby.players = newLobbyPlayers;
+
+                // TODO: if multiple are at the exactly same time, there will be bug
+                lobbyEntry.getValue().remove(i);
+                lobbyInterfaceRepository.save(lobby);
+
+                broadcast(generateTextMessage("player_quit", new JSONObject("{'playername':'" + player.name + "'}")),
+                        lobby.id);
+            }
+        }
     }
 
-    private TextMessage generateTextMessageResponse(String event, JSONObject data) {
+    private TextMessage generateTextMessage(String event, JSONObject data) {
         JSONObject out = new JSONObject();
-        out.put("event", event);
         out.put("data", data);
+        out.put("event", event);
         return new TextMessage(out.toString());
     }
 
     private TextMessage generateDeclineMessage(String reason) {
-        return generateTextMessageResponse("declined", new JSONObject("{'reason': '" + reason + "'}"));
+        return generateTextMessage("declined", new JSONObject("{'reason':'" + reason + "'}"));
     }
 }
