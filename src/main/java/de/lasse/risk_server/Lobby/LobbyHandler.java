@@ -108,6 +108,12 @@ public class LobbyHandler extends TextWebSocketHandler {
                 if (!sessionId.equals(playerSession.getId()))
                     continue;
                 Lobby lobby = lobbyInterfaceRepository.findById(lobbyEntry.getKey()).orElseThrow();
+
+                if (lobby.players.length <= 1) {
+                    lobbyInterfaceRepository.delete(lobby);
+                    return;
+                }
+
                 LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
                 LobbyPlayer player = lobby.players[i];
 
