@@ -31,7 +31,7 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
-    private final HashMap<String, List<WebSocketSession>> sessions = new HashMap<>();
+    public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -39,22 +39,25 @@ public class LobbyHandler extends TextWebSocketHandler {
         String playername = QueryUtil.getQueryValue("playername", session.getUri().getQuery());
 
         if (lobbyid == null || playername == null) {
+            session.sendMessage(new TextMessage("Bad Request", true));
             session.close();
             return;
         }
 
         Lobby lobby = lobbyInterfaceRepository.findById(lobbyid).orElse(null);
-        if (lobby == null) {
+        if (lobby == null || !sessions.containsKey(lobbyid)) {
+            session.sendMessage(new TextMessage("Lobby not found", true));
             session.close();
             return;
         }
 
-        if (lobby.maxPlayers >= lobby.players.length) {
+        if (lobby.players.length >= lobby.maxPlayers) {
+            session.sendMessage(new TextMessage("Lobby is full", true));
             session.close();
             return;
         }
 
-        // sessions.get(lobbyid).add(session);
+        sessions.get(lobbyid).add(session);
 
         int position = lobby.players.length;
         String token = TokenGenerator.generateToken();

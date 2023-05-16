@@ -1,5 +1,6 @@
 package de.lasse.risk_server.Lobby;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +22,7 @@ import de.lasse.risk_server.Database.DisplayLobby.DisplayLobby;
 import de.lasse.risk_server.Database.DisplayLobby.DisplayLobbyRepository;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
+import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
 import de.lasse.risk_server.Utils.TokenGenerator;
 
 @RestController
@@ -57,10 +60,12 @@ public class LobbyController {
 
     @RequestMapping(value = "/lobbies/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> createLobby(@RequestBody Lobby lobby) {
-        System.out.println(lobby.toJsonObject().toString());
-        System.out.println("Creating Game");
-        return new ResponseEntity<String>(TokenGenerator.generateToken(), HttpStatus.ACCEPTED);
+    public ResponseEntity<String> createLobby() {
+        Lobby l = Lobby.generateDefault();
+        lobbyInterfaceRepository.save(l);
+
+        LobbyHandler.sessions.put(l.id, new ArrayList<>());
+        return new ResponseEntity<String>(l.id, HttpStatus.ACCEPTED);
     }
 
 }
