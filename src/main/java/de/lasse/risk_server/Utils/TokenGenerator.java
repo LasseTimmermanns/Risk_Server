@@ -1,14 +1,13 @@
 package de.lasse.risk_server.Utils;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
+import java.util.UUID;
 
 public class TokenGenerator {
 
     public static String generateToken() {
-        byte[] array = new byte[16];
-        new Random().nextBytes(array);
-        return new String(array, StandardCharsets.US_ASCII);
+        String token = UUID.randomUUID().toString();
+        token = token.replaceAll("-", "");
+        return token;
     }
 
 }
