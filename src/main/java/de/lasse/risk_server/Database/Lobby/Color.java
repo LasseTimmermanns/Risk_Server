@@ -1,10 +1,12 @@
 package de.lasse.risk_server.Database.Lobby;
 
 import org.json.JSONObject;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "colors")
 public class Color {
 
-    private String name, hex;
+    public String name, hex;
 
     public Color(String name, String hex) {
         this.name = name;
