@@ -15,7 +15,8 @@ public class LobbyPlayer {
 
     public int position;
 
-    public LobbyPlayer(String name, String token, Color color, int position) {
+    public LobbyPlayer(String id, String name, String token, Color color, int position) {
+        this.id = id;
         this.name = name;
         this.token = token;
         this.color = color;
@@ -24,6 +25,7 @@ public class LobbyPlayer {
 
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
+        out.put("id", id);
         out.put("name", name);
         out.put("color", color.toJsonObject());
         out.put("position", position);

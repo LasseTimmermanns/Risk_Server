@@ -32,7 +32,7 @@ public class ColorController {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
-    @RequestMapping(value = "settings/remainingcolors", method = RequestMethod.GET)
+    @RequestMapping(value = "settings/colors/remaining", method = RequestMethod.GET)
     public ResponseEntity<String> getRemainingColors(@RequestParam Optional<String> lobbyid) {
         if (!lobbyid.isPresent())
             return new ResponseEntity<String>("No lobbyid Provided", HttpStatus.BAD_REQUEST);
@@ -68,7 +68,7 @@ public class ColorController {
         return new ResponseEntity<String>(out.toString(), HttpStatus.ACCEPTED);
     }
 
-    @RequestMapping(value = "settings/colors", method = RequestMethod.GET)
+    @RequestMapping(value = "settings/colors/all", method = RequestMethod.GET)
     public ResponseEntity<String> getAllColors() {
         List<Color> allColors = colorInterfaceRepository.findAll();
         JSONArray out = new JSONArray();

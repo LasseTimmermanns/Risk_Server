@@ -27,6 +27,9 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
+    @Autowired
+    SettingsService settingsService;
+
     public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<>();
 
     @Override
@@ -35,40 +38,57 @@ public class LobbyHandler extends TextWebSocketHandler {
         String playername = QueryUtil.getQueryValue("playername", session.getUri().getQuery());
 
         if (lobbyid == null || playername == null) {
-            session.sendMessage(generateDeclineMessage("Not enough data provided"));
+            session.sendMessage(WebSocketHelper.generateDeclineMessage("Not enough data provided"));
             session.close();
             return;
         }
 
         Lobby lobby = lobbyInterfaceRepository.findById(lobbyid).orElse(null);
         if (lobby == null || !sessions.containsKey(lobbyid)) {
-            session.sendMessage(generateDeclineMessage("Lobby not found"));
+            session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby not found"));
             session.close();
             return;
         }
 
         if (lobby.players.length >= lobby.maxPlayers) {
-            session.sendMessage(generateDeclineMessage("Lobby is full"));
+            session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby is full"));
             session.close();
             return;
         }
 
         int position = lobby.players.length;
         String token = TokenGenerator.generateToken();
-        LobbyPlayer lobbyPlayer = new LobbyPlayer(playername, token, new Color("white", "#fff"), position);
+        String uuid = TokenGenerator.generateToken();
+        LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, new Color("white", "#fff"), position);
 
         lobby.players = Arrays.copyOf(lobby.players, position + 1);
         lobby.players[position] = lobbyPlayer;
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(generateTextMessage("token_granted", new JSONObject("{'token':'" + token + "'}")));
-        session.sendMessage(generateTextMessage("join_accepted", lobby.toJsonObject()));
-        broadcast(generateTextMessage("join", lobbyPlayer.toJsonObject()), lobbyid);
+        session.sendMessage(
+                WebSocketHelper.generateTextMessage("token_granted", new JSONObject("{'token':'" + token + "'}")));
+
+        session.sendMessage(WebSocketHelper.generateTextMessage("join_accepted", lobby.toJsonObject()));
+
+        broadcast(WebSocketHelper.generateTextMessage("join", lobbyPlayer.toJsonObject()), lobbyid);
         sessions.get(lobbyid).add(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        System.out.println(message.getPayload());
+        JSONObject message_json = new JSONObject(message.getPayload());
+        JSONObject data = message_json.getJSONObject("data");
+        switch (message_json.getString("event")) {
+            case "color_change":
+                settingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
+                        data.getString("hex"), session);
+                break;
+            default:
+                System.out.println("Message not handled in LobbyHandler");
+                System.out.println(message_json.toString());
+                break;
+        }
     }
 
     private void broadcast(TextMessage message, String lobbyid) throws IOException {
@@ -109,20 +129,12 @@ public class LobbyHandler extends TextWebSocketHandler {
                 lobbyEntry.getValue().remove(i);
                 lobbyInterfaceRepository.save(lobby);
 
-                broadcast(generateTextMessage("player_quit", new JSONObject("{'playername':'" + player.name + "'}")),
+                broadcast(
+                        WebSocketHelper.generateTextMessage("player_quit",
+                                new JSONObject("{'playername':'" + player.name + "'}")),
                         lobby.id);
             }
         }
     }
 
-    private TextMessage generateTextMessage(String event, JSONObject data) {
-        JSONObject out = new JSONObject();
-        out.put("data", data);
-        out.put("event", event);
-        return new TextMessage(out.toString());
-    }
-
-    private TextMessage generateDeclineMessage(String reason) {
-        return generateTextMessage("declined", new JSONObject("{'reason':'" + reason + "'}"));
-    }
 }
