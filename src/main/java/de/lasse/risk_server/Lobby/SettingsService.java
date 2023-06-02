@@ -1,15 +1,11 @@
 package de.lasse.risk_server.Lobby;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-
-import javax.websocket.Decoder.Text;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import de.lasse.risk_server.Database.Lobby.Color;

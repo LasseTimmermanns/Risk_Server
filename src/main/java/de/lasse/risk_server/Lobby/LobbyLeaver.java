@@ -26,7 +26,7 @@ public class LobbyLeaver {
 
     public void leave(WebSocketSession session) throws Exception {
         String sessionId = session.getId();
-        for (Entry<String, List<WebSocketSession>> lobbyEntry : lobbyHandler.sessions.entrySet()) {
+        for (Entry<String, List<WebSocketSession>> lobbyEntry : LobbyHandler.sessions.entrySet()) {
             for (int i = 0; i < lobbyEntry.getValue().size(); i++) {
                 WebSocketSession playerSession = lobbyEntry.getValue().get(i);
                 if (!sessionId.equals(playerSession.getId()))

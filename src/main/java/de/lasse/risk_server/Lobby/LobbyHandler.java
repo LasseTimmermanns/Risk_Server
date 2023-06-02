@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Autowired
     LobbyLeaver lobbyLeaver;
 
-    public HashMap<String, List<WebSocketSession>> sessions = new HashMap<String, List<WebSocketSession>>();
+    public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<String, List<WebSocketSession>>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
