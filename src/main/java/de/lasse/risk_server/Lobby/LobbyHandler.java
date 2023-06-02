@@ -80,7 +80,8 @@ public class LobbyHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println(message.getPayload());
         JSONObject message_json = new JSONObject(message.getPayload());
-        JSONObject data = message_json.getJSONObject("data");
+        JSONObject data = message_json.has("data") ? message_json.getJSONObject("data") : null;
+
         switch (message_json.getString("event")) {
             case "color_change":
                 settingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
