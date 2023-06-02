@@ -30,7 +30,10 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Autowired
     SettingsService settingsService;
 
-    public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<>();
+    @Autowired
+    LobbyLeaver lobbyLeaver;
+
+    public HashMap<String, List<WebSocketSession>> sessions = new HashMap<String, List<WebSocketSession>>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -84,6 +87,9 @@ public class LobbyHandler extends TextWebSocketHandler {
                 settingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
                         data.getString("hex"), session);
                 break;
+            case "leave":
+                lobbyLeaver.leave(session);
+                break;
             default:
                 System.out.println("Message not handled in LobbyHandler");
                 System.out.println(message_json.toString());
@@ -91,7 +97,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         }
     }
 
-    private void broadcast(TextMessage message, String lobbyid) throws IOException {
+    public void broadcast(TextMessage message, String lobbyid) throws IOException {
         for (WebSocketSession session : sessions.get(lobbyid)) {
             session.sendMessage(message);
         }
@@ -99,42 +105,7 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String sessionId = session.getId();
-        for (Entry<String, List<WebSocketSession>> lobbyEntry : sessions.entrySet()) {
-            for (int i = 0; i < lobbyEntry.getValue().size(); i++) {
-                WebSocketSession playerSession = lobbyEntry.getValue().get(i);
-                if (!sessionId.equals(playerSession.getId()))
-                    continue;
-                Lobby lobby = lobbyInterfaceRepository.findById(lobbyEntry.getKey()).orElseThrow();
-
-                if (lobby.players.length <= 1) {
-                    lobbyInterfaceRepository.delete(lobby);
-                    return;
-                }
-
-                LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
-                LobbyPlayer player = lobby.players[i];
-
-                int appendIndex = 0;
-                for (int x = 0; x < lobby.players.length; x++) {
-                    if (x == i)
-                        continue;
-
-                    newLobbyPlayers[appendIndex] = lobby.players[i];
-                    appendIndex++;
-                }
-                lobby.players = newLobbyPlayers;
-
-                // TODO: if multiple are at the exactly same time, there will be bug
-                lobbyEntry.getValue().remove(i);
-                lobbyInterfaceRepository.save(lobby);
-
-                broadcast(
-                        WebSocketHelper.generateTextMessage("player_quit",
-                                new JSONObject("{'playername':'" + player.name + "'}")),
-                        lobby.id);
-            }
-        }
+        lobbyLeaver.leave(session);
     }
 
 }
