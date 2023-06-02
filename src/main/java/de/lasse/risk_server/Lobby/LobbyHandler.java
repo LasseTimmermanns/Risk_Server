@@ -96,7 +96,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         }
     }
 
-    public void broadcast(TextMessage message, String lobbyid) throws IOException {
+    public static void broadcast(TextMessage message, String lobbyid) throws IOException {
         for (WebSocketSession session : sessions.get(lobbyid)) {
             session.sendMessage(message);
         }

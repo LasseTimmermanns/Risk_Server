@@ -19,9 +19,6 @@ public class LobbyLeaver {
     SettingsService settingsService;
 
     @Autowired
-    LobbyHandler lobbyHandler;
-
-    @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
     public void leave(WebSocketSession session) throws Exception {
@@ -55,7 +52,7 @@ public class LobbyLeaver {
                 lobbyEntry.getValue().remove(i);
                 lobbyInterfaceRepository.save(lobby);
 
-                lobbyHandler.broadcast(
+                LobbyHandler.broadcast(
                         WebSocketHelper.generateTextMessage("player_quit",
                                 new JSONObject("{'playername':'" + player.name + "'}")),
                         lobby.id);
