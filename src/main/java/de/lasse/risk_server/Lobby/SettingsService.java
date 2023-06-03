@@ -1,8 +1,12 @@
 package de.lasse.risk_server.Lobby;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,28 @@ public class SettingsService {
 
     @Autowired
     ColorInterfaceRepository colorInterfaceRepository;
+
+    public static List<Color> colors = null;
+    public static String colorsString;
+
+    @PostConstruct
+    public void init() {
+        colors = colorInterfaceRepository.findAll();
+        JSONArray json = new JSONArray();
+        for (Color c : colors)
+            json.put(c.toJsonObject());
+        colorsString = json.toString();
+    }
+
+    public Color getUnoccupiedColor(Lobby lobby) {
+        int offset = (int) (Math.random() * colors.size());
+        for (int i = 0; i < colors.size(); i++) {
+            Color c = colors.get((offset + i) % colors.size());
+            if (!colorIsOccupied(c.hex, lobby))
+                return c;
+        }
+        return null;
+    }
 
     private MessageBroadcastTuple changeColor(String providedLobbyId, String providedToken,
             String newColor, WebSocketSession session) {
@@ -82,7 +108,6 @@ public class SettingsService {
     }
 
     public Optional<Color> getColor(String hex) {
-        Optional<Color> foundColor = colorInterfaceRepository.findByHex(hex);
-        return foundColor;
+        return colors.stream().filter(c -> c.hex.equalsIgnoreCase(hex)).findFirst();
     }
 }
