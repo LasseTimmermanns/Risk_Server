@@ -33,7 +33,6 @@ public class SettingsService {
             return;
         }
 
-        System.out.println("RequestedPublic " + Boolean.toString(isPublic));
         lobby.isPublic = isPublic;
         lobbyInterfaceRepository.save(lobby);
 
