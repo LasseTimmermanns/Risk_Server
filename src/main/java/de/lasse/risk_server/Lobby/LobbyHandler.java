@@ -13,7 +13,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
 import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
@@ -61,7 +60,9 @@ public class LobbyHandler extends TextWebSocketHandler {
         int position = lobby.players.length;
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
-        LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, new Color("white", "#fff"), position);
+
+        LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, settingsService.getUnoccupiedColor(lobby),
+                position);
 
         lobby.players = Arrays.copyOf(lobby.players, position + 1);
         lobby.players[position] = lobbyPlayer;
@@ -88,7 +89,7 @@ public class LobbyHandler extends TextWebSocketHandler {
                         data.getString("hex"), session);
                 break;
             case "leave":
-                lobbyLeaver.leave(session);
+                session.close();
                 break;
             default:
                 System.out.println("Message not handled in LobbyHandler");
@@ -105,6 +106,7 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        System.out.println("Session Closed");
         lobbyLeaver.leave(session);
     }
 
