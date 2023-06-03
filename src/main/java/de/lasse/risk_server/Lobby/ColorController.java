@@ -68,11 +68,7 @@ public class ColorController {
 
     @RequestMapping(value = "settings/colors/all", method = RequestMethod.GET)
     public ResponseEntity<String> getAllColors() {
-        List<Color> allColors = colorInterfaceRepository.findAll();
-        JSONArray out = new JSONArray();
-        for (Color c : allColors)
-            out.put(c.toJsonObject());
-        return new ResponseEntity<String>(out.toString(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<String>(SettingsService.colorsString, HttpStatus.ACCEPTED);
     }
 
 }
