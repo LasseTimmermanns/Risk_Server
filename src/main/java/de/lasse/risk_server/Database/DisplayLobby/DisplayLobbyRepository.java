@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ public class DisplayLobbyRepository {
         public List<DisplayLobby> getAll() {
                 TypedAggregation<DisplayLobby> aggregation = Aggregation.newAggregation(
                                 DisplayLobby.class,
+                                Aggregation.match(Criteria.where("isPublic").is(true)),
                                 Aggregation.project()
                                                 .and(ArrayOperators.ArrayElemAt.arrayOf("players").elementAt(0))
                                                 .as("firstPlayer")
