@@ -43,7 +43,7 @@ public class Lobby {
         out.put("mapId", mapId);
         out.put("maxPlayers", maxPlayers);
         out.put("turnTimer", turnTimer);
-        out.put("isPublic", cardBonus);
+        out.put("isPublic", isPublic);
         out.put("cardBonus", cardBonus);
 
         JSONArray playerArray = new JSONArray();
