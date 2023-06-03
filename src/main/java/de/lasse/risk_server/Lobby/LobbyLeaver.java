@@ -35,21 +35,23 @@ public class LobbyLeaver {
                 lobbyEntry.getValue().remove(i);
                 Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElseThrow();
                 LobbyPlayer player = lobby.players[i];
-                removeSession(lobby, player);
+                boolean lobbyAlive = removeSession(lobby, player);
 
-                LobbyHandler.broadcast(
-                        WebSocketHelper.generateTextMessage("player_quit",
-                                new JSONObject("{'id':'" + player.id + "'}")),
-                        lobby.id);
+                if (lobbyAlive) {
+                    LobbyHandler.broadcast(
+                            WebSocketHelper.generateTextMessage("player_quit",
+                                    new JSONObject("{'id':'" + player.id + "'}")),
+                            lobby.id);
+                }
             }
         }
     }
 
-    public void removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
+    public boolean removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
         if (lobby.players.length <= 1) {
             lobbyInterfaceRepository.delete(lobby);
             LobbyHandler.sessions.remove(lobby.id);
-            return;
+            return false;
         }
 
         LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
@@ -65,6 +67,7 @@ public class LobbyLeaver {
 
         lobby.players = newLobbyPlayers;
         lobbyInterfaceRepository.save(lobby);
+        return true;
     }
 
 }
