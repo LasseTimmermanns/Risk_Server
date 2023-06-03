@@ -39,7 +39,7 @@ public class LobbyLeaver {
 
                 LobbyHandler.broadcast(
                         WebSocketHelper.generateTextMessage("player_quit",
-                                new JSONObject("{'playername':'" + player.name + "'}")),
+                                new JSONObject("{'id':'" + player.id + "'}")),
                         lobby.id);
             }
         }
