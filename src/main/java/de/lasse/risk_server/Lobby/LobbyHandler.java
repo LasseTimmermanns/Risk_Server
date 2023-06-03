@@ -100,6 +100,11 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     public static void broadcast(TextMessage message, String lobbyid) throws IOException {
         for (WebSocketSession session : sessions.get(lobbyid)) {
+            if (!session.isOpen()) {
+                System.out.println("Try Broadcast but session is closed");
+                continue;
+            }
+
             session.sendMessage(message);
         }
     }
