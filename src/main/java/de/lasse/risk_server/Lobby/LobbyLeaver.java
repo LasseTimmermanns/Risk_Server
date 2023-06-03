@@ -61,7 +61,11 @@ public class LobbyLeaver {
             if (lobby.players[x].id.equals(removingPlayer.id))
                 continue;
 
-            newLobbyPlayers[appendIndex] = lobby.players[x];
+            LobbyPlayer next = lobby.players[x];
+            if (appendIndex == 0)
+                next.host = true;
+
+            newLobbyPlayers[appendIndex] = next;
             appendIndex++;
         }
 
