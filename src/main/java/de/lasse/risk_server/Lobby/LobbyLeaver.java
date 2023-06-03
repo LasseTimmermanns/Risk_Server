@@ -24,33 +24,18 @@ public class LobbyLeaver {
     public void leave(WebSocketSession session) throws Exception {
         String sessionId = session.getId();
         for (Entry<String, List<WebSocketSession>> lobbyEntry : LobbyHandler.sessions.entrySet()) {
+            String lobbyId = lobbyEntry.getKey();
+            List<WebSocketSession> lobbySessions = lobbyEntry.getValue();
+
             for (int i = 0; i < lobbyEntry.getValue().size(); i++) {
-                WebSocketSession playerSession = lobbyEntry.getValue().get(i);
+                WebSocketSession playerSession = lobbySessions.get(i);
                 if (!sessionId.equals(playerSession.getId()))
                     continue;
-                Lobby lobby = lobbyInterfaceRepository.findById(lobbyEntry.getKey()).orElseThrow();
 
-                if (lobby.players.length <= 1) {
-                    lobbyInterfaceRepository.delete(lobby);
-                    return;
-                }
-
-                LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
-                LobbyPlayer player = lobby.players[i];
-
-                int appendIndex = 0;
-                for (int x = 0; x < lobby.players.length; x++) {
-                    if (x == i)
-                        continue;
-
-                    newLobbyPlayers[appendIndex] = lobby.players[i];
-                    appendIndex++;
-                }
-                lobby.players = newLobbyPlayers;
-
-                // TODO: if multiple are at the exactly same time, there will be bug
                 lobbyEntry.getValue().remove(i);
-                lobbyInterfaceRepository.save(lobby);
+                Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElseThrow();
+                LobbyPlayer player = lobby.players[i];
+                removeSession(lobby, player);
 
                 LobbyHandler.broadcast(
                         WebSocketHelper.generateTextMessage("player_quit",
@@ -58,6 +43,28 @@ public class LobbyLeaver {
                         lobby.id);
             }
         }
+    }
+
+    public void removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
+        if (lobby.players.length <= 1) {
+            lobbyInterfaceRepository.delete(lobby);
+            LobbyHandler.sessions.remove(lobby.id);
+            return;
+        }
+
+        LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
+
+        int appendIndex = 0;
+        for (int x = 0; x < lobby.players.length; x++) {
+            if (lobby.players[x].id.equals(removingPlayer.id))
+                continue;
+
+            newLobbyPlayers[appendIndex] = lobby.players[x];
+            appendIndex++;
+        }
+
+        lobby.players = newLobbyPlayers;
+        lobbyInterfaceRepository.save(lobby);
     }
 
 }
