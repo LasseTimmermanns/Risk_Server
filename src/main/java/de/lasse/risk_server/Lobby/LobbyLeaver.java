@@ -16,7 +16,7 @@ import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
 public class LobbyLeaver {
 
     @Autowired
-    SettingsService settingsService;
+    PlayerSettingsService settingsService;
 
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;

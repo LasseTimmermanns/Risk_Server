@@ -68,7 +68,7 @@ public class ColorController {
 
     @RequestMapping(value = "settings/colors/all", method = RequestMethod.GET)
     public ResponseEntity<String> getAllColors() {
-        return new ResponseEntity<String>(SettingsService.colorsString, HttpStatus.ACCEPTED);
+        return new ResponseEntity<String>(PlayerSettingsService.colorsString, HttpStatus.ACCEPTED);
     }
 
 }

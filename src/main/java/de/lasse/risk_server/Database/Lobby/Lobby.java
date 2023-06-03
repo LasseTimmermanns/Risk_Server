@@ -24,14 +24,17 @@ public class Lobby {
 
     public LobbyPlayer[] players;
 
+    public boolean isPublic;
+
     public Lobby(int maxPlayers, int turnTimer, String cardBonus, String mapId, long creationDate,
-            LobbyPlayer[] players) {
+            LobbyPlayer[] players, boolean isPublic) {
         this.maxPlayers = maxPlayers;
         this.turnTimer = turnTimer;
         this.cardBonus = cardBonus;
         this.mapId = mapId;
         this.players = players;
         this.creationDate = creationDate;
+        this.isPublic = isPublic;
     }
 
     public JSONObject toJsonObject() {
@@ -40,6 +43,7 @@ public class Lobby {
         out.put("mapId", mapId);
         out.put("maxPlayers", maxPlayers);
         out.put("turnTimer", turnTimer);
+        out.put("isPublic", cardBonus);
         out.put("cardBonus", cardBonus);
 
         JSONArray playerArray = new JSONArray();
@@ -52,7 +56,7 @@ public class Lobby {
     }
 
     public static Lobby generateDefault() {
-        Lobby out = new Lobby(6, 60, "fixed", "classic", System.currentTimeMillis(), new LobbyPlayer[0]);
+        Lobby out = new Lobby(6, 60, "fixed", "classic", System.currentTimeMillis(), new LobbyPlayer[0], false);
         return out;
     }
 }

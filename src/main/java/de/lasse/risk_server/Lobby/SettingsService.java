@@ -1,22 +1,16 @@
 package de.lasse.risk_server.Lobby;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
 import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
-import de.lasse.risk_server.Database.Settings.ColorInterfaceRepository;
 
 @Service
 public class SettingsService {
@@ -24,90 +18,29 @@ public class SettingsService {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
-    @Autowired
-    ColorInterfaceRepository colorInterfaceRepository;
-
-    public static List<Color> colors = null;
-    public static String colorsString;
-
-    @PostConstruct
-    public void init() {
-        colors = colorInterfaceRepository.findAll();
-        JSONArray json = new JSONArray();
-        for (Color c : colors)
-            json.put(c.toJsonObject());
-        colorsString = json.toString();
+    public boolean isAuthorized(Lobby lobby, String token) {
+        Optional<LobbyPlayer> player = Arrays.stream(lobby.players).filter(p -> p.host && p.token.equals(token))
+                .findFirst();
+        return player.isPresent();
     }
 
-    public Color getUnoccupiedColor(Lobby lobby) {
-        int offset = (int) (Math.random() * colors.size());
-        for (int i = 0; i < colors.size(); i++) {
-            Color c = colors.get((offset + i) % colors.size());
-            if (!colorIsOccupied(c.hex, lobby))
-                return c;
+    public void changeVisibility(String lobbyid, boolean isPublic, String token, WebSocketSession session)
+            throws Exception {
+        Lobby lobby = lobbyInterfaceRepository.findById(lobbyid).orElseThrow();
+        if (!isAuthorized(lobby, token)) {
+            session.sendMessage(WebSocketHelper.generateDeclineMessage("Not Authorized"));
+            System.out.println("Player not Authorized to change Visibility");
+            return;
         }
-        return null;
-    }
 
-    private MessageBroadcastTuple changeColor(String providedLobbyId, String providedToken,
-            String newColor, WebSocketSession session) {
-        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(providedLobbyId);
-        if (!lobby_opt.isPresent())
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("lobby not valid"),
-                    session);
-
-        Lobby lobby = lobby_opt.get();
-
-        int playerIndex = getPlayerIndex(providedToken, lobby);
-        if (playerIndex == -1)
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"), session);
-
-        if (colorIsOccupied(newColor, lobby))
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color already used"), session);
-
-        Optional<Color> color = getColor(newColor);
-        if (!color.isPresent())
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color not valid"), session);
-
-        lobby.players[playerIndex].color = color.get();
+        System.out.println("RequestedPublic " + Boolean.toString(isPublic));
+        lobby.isPublic = isPublic;
         lobbyInterfaceRepository.save(lobby);
 
-        LobbyPlayer player = lobby.players[playerIndex];
-
-        JSONObject out = new JSONObject();
-        out.put("playerid", player.id);
-        out.put("color", color.get().hex);
-
-        return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("color_change", out), providedLobbyId);
+        LobbyHandler.broadcast(
+                WebSocketHelper.generateTextMessage("privacy_change",
+                        new JSONObject("{'isPublic':" + isPublic + "}")),
+                lobby.id);
     }
 
-    public void performColorChange(String providedLobbyId, String providedToken,
-            String newColor, WebSocketSession session) {
-        try {
-            this.changeColor(providedLobbyId, providedToken, newColor, session).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int getPlayerIndex(String token, Lobby lobby) {
-        for (int i = 0; i < lobby.players.length; i++) {
-            LobbyPlayer current = lobby.players[i];
-            if (current.token.equals(token))
-                return i;
-        }
-        return -1;
-    }
-
-    public boolean colorIsOccupied(String hex, Lobby lobby) {
-        for (LobbyPlayer p : lobby.players) {
-            if (p.color.hex.equalsIgnoreCase(hex))
-                return true;
-        }
-        return false;
-    }
-
-    public Optional<Color> getColor(String hex) {
-        return colors.stream().filter(c -> c.hex.equalsIgnoreCase(hex)).findFirst();
-    }
 }

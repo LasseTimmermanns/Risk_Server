@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
+
+    @Autowired
+    PlayerSettingsService playerSettingsService;
 
     @Autowired
     SettingsService settingsService;
@@ -61,8 +65,8 @@ public class LobbyHandler extends TextWebSocketHandler {
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
 
-        LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, settingsService.getUnoccupiedColor(lobby),
-                position);
+        LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,
+                playerSettingsService.getUnoccupiedColor(lobby), position);
 
         lobby.players = Arrays.copyOf(lobby.players, position + 1);
         lobby.players[position] = lobbyPlayer;
@@ -81,15 +85,20 @@ public class LobbyHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println(message.getPayload());
         JSONObject message_json = new JSONObject(message.getPayload());
+
         JSONObject data = message_json.has("data") ? message_json.getJSONObject("data") : null;
 
         switch (message_json.getString("event")) {
             case "color_change":
-                settingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
+                playerSettingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
                         data.getString("hex"), session);
                 break;
             case "leave":
                 session.close();
+                break;
+            case "privacy_change":
+                settingsService.changeVisibility(data.getString("lobbyid"), data.getBoolean("isPublic"),
+                        data.getString("token"), session);
                 break;
             default:
                 System.out.println("Message not handled in LobbyHandler");
