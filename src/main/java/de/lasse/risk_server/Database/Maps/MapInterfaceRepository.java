@@ -6,4 +6,5 @@ public interface MapInterfaceRepository extends MongoRepository<Map, String> {
 
     public Map findMapByName(String name);
 
+    public DisplayMap findDisplayMapByName(String name);
 }
