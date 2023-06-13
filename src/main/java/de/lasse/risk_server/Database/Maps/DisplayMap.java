@@ -13,7 +13,7 @@ public class DisplayMap {
 
     private String name;
 
-    private int width, height;
+    public int width, height;
 
     @Field("display_path")
     public String displayPath;

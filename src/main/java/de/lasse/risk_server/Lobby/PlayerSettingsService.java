@@ -16,6 +16,8 @@ import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
 import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
+import de.lasse.risk_server.Database.Maps.DisplayMap;
+import de.lasse.risk_server.Database.Maps.MapInterfaceRepository;
 import de.lasse.risk_server.Database.Settings.ColorInterfaceRepository;
 
 @Service
@@ -26,6 +28,9 @@ public class PlayerSettingsService {
 
     @Autowired
     ColorInterfaceRepository colorInterfaceRepository;
+
+    @Autowired
+    MapInterfaceRepository mapInterfaceRepository;
 
     public static List<Color> colors = null;
     public static String colorsString;
@@ -47,6 +52,40 @@ public class PlayerSettingsService {
                 return c;
         }
         return null;
+    }
+
+    public MessageBroadcastTuple changeFlagPosition(String providedLobbyId, String providedToken, double flagx,
+            double flagy, WebSocketSession session) {
+        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(providedLobbyId);
+        if (!lobby_opt.isPresent())
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("lobby not valid"),
+                    session);
+
+        Lobby lobby = lobby_opt.get();
+
+        int playerIndex = getPlayerIndex(providedToken, lobby);
+        if (playerIndex == -1)
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"), session);
+
+        // DisplayMap map = mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
+        // if (!FlagPosition.isInside(map, flagx, flagy))
+        // return new
+        // MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("coordinates not
+        // valid"), session);
+
+        LobbyPlayer player = lobby.players[playerIndex];
+
+        player.flagx = flagx;
+        player.flagy = flagy;
+        lobbyInterfaceRepository.save(lobby);
+
+        JSONObject out = new JSONObject();
+        out.put("playerid", player.id);
+        out.put("flagx", flagx);
+        out.put("flagy", flagy);
+
+        return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("flagposition_update", out),
+                providedLobbyId);
     }
 
     private MessageBroadcastTuple changeColor(String providedLobbyId, String providedToken,
@@ -76,7 +115,7 @@ public class PlayerSettingsService {
 
         JSONObject out = new JSONObject();
         out.put("playerid", player.id);
-        out.put("color", color.get().hex);
+        out.put("color", color.get().toJsonObject());
 
         return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("color_change", out), providedLobbyId);
     }
@@ -85,6 +124,15 @@ public class PlayerSettingsService {
             String newColor, WebSocketSession session) {
         try {
             this.changeColor(providedLobbyId, providedToken, newColor, session).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void performFlagPositionChange(String providedLobbyId, String providedToken,
+            double flagx, double flagy, WebSocketSession session) {
+        try {
+            this.changeFlagPosition(providedLobbyId, providedToken, flagx, flagy, session).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,4 +158,5 @@ public class PlayerSettingsService {
     public Optional<Color> getColor(String hex) {
         return colors.stream().filter(c -> c.hex.equalsIgnoreCase(hex)).findFirst();
     }
+
 }
