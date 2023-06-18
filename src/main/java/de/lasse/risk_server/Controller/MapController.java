@@ -22,26 +22,26 @@ public class MapController {
     @Autowired
     MapInterfaceRepository mapInterfaceRepository;
 
-    @RequestMapping(value = "/maps/{map_name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/maps/{map_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> getMap(@PathVariable String map_name) {
+    public ResponseEntity<String> getMap(@PathVariable String map_id) {
         try {
-            Map map = mapInterfaceRepository.findMapByName(map_name);
+            Map map = mapInterfaceRepository.findMapById(map_id);
             return new ResponseEntity<String>(map.toJsonObject().toString(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            System.out.println("Couldnt find " + map_name);
+            System.out.println("Couldnt find " + map_id);
             return new ResponseEntity<String>("Map not found", HttpStatus.NOT_FOUND);
         }
     }
 
-    @RequestMapping(value = "/displaymaps/{map_name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/displaymaps/{map_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> getDisplayMap(@PathVariable String map_name) {
+    public ResponseEntity<String> getDisplayMap(@PathVariable String map_id) {
         try {
-            DisplayMap map = mapInterfaceRepository.findDisplayMapByName(map_name);
+            DisplayMap map = mapInterfaceRepository.findDisplayMapById(map_id);
             return new ResponseEntity<String>(map.toJsonObject().toString(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            System.out.println("Couldnt find " + map_name);
+            System.out.println("Couldnt find " + map_id);
             return new ResponseEntity<String>("Map not found", HttpStatus.NOT_FOUND);
         }
     }

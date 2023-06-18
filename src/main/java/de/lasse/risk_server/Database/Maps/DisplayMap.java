@@ -9,23 +9,20 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class DisplayMap {
 
     @Id
-    private String id;
+    public String id;
 
-    private String name;
+    @Field("display_width")
+    public int width;
 
-    public int width, height;
-
-    @Field("display_path")
-    public String displayPath;
+    @Field("display_height")
+    public int height;
 
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
 
         json.put("id", this.id);
-        json.put("name", this.name);
         json.put("width", this.width);
         json.put("height", this.height);
-        json.put("display_path", displayPath);
         return json;
     }
 }

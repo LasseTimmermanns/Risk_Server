@@ -39,6 +39,9 @@ public class LobbyHandler extends TextWebSocketHandler {
     @Autowired
     LobbyLeaver lobbyLeaver;
 
+    @Autowired
+    FlagPosition flagPosition;
+
     public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<String, List<WebSocketSession>>();
 
     @Override
@@ -72,7 +75,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         // DisplayMap map = mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
         // mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
 
-        double[] flag_position = new double[] { 500, 400 };
+        double[] flag_position = flagPosition.generateRandomValidCoordinates(lobby.mapId);
 
         LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,
                 playerSettingsService.getUnoccupiedColor(lobby), position, flag_position[0], flag_position[1]);

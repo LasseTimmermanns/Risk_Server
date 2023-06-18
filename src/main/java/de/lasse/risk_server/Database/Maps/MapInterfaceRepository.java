@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface MapInterfaceRepository extends MongoRepository<Map, String> {
 
-    public Map findMapByName(String name);
+    public Map findMapById(String id);
 
-    public DisplayMap findDisplayMapByName(String name);
+    public DisplayMap findDisplayMapById(String id);
 }

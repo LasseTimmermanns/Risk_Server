@@ -16,13 +16,14 @@ import de.lasse.risk_server.Database.Lobby.Color;
 import de.lasse.risk_server.Database.Lobby.Lobby;
 import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
 import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
-import de.lasse.risk_server.Database.Maps.DisplayMap;
 import de.lasse.risk_server.Database.Maps.MapInterfaceRepository;
 import de.lasse.risk_server.Database.Settings.ColorInterfaceRepository;
 
 @Service
 public class PlayerSettingsService {
 
+    @Autowired
+    FlagPosition flagPosition;
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
@@ -67,11 +68,8 @@ public class PlayerSettingsService {
         if (playerIndex == -1)
             return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"), session);
 
-        // DisplayMap map = mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
-        // if (!FlagPosition.isInside(map, flagx, flagy))
-        // return new
-        // MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("coordinates not
-        // valid"), session);
+        if (!this.flagPosition.isInside(lobby.mapId, flagx, flagy))
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("coordinates not valid"), session);
 
         LobbyPlayer player = lobby.players[playerIndex];
 

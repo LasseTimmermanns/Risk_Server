@@ -18,7 +18,7 @@ public class Lobby {
 
     public String cardBonus;
 
-    public String mapName;
+    public String mapId;
 
     public long creationDate;
 
@@ -26,12 +26,12 @@ public class Lobby {
 
     public boolean isPublic;
 
-    public Lobby(int maxPlayers, int turnTimer, String cardBonus, String mapName, long creationDate,
+    public Lobby(int maxPlayers, int turnTimer, String cardBonus, String mapId, long creationDate,
             LobbyPlayer[] players, boolean isPublic) {
         this.maxPlayers = maxPlayers;
         this.turnTimer = turnTimer;
         this.cardBonus = cardBonus;
-        this.mapName = mapName;
+        this.mapId = mapId;
         this.players = players;
         this.creationDate = creationDate;
         this.isPublic = isPublic;
@@ -40,7 +40,7 @@ public class Lobby {
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
         out.put("id", id);
-        out.put("mapName", mapName);
+        out.put("mapId", mapId);
         out.put("maxPlayers", maxPlayers);
         out.put("turnTimer", turnTimer);
         out.put("isPublic", isPublic);
