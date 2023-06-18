@@ -35,26 +35,30 @@ public class LobbyLeaver {
                 lobbyEntry.getValue().remove(i);
                 Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElseThrow();
                 LobbyPlayer player = lobby.players[i];
-                boolean lobbyAlive = removeSession(lobby, player);
+                String hostid = removeSession(lobby, player);
 
-                if (lobbyAlive) {
-                    LobbyHandler.broadcast(
-                            WebSocketHelper.generateTextMessage("player_quit",
-                                    new JSONObject("{'id':'" + player.id + "'}")),
-                            lobby.id);
-                }
+                boolean lobbyAlive = hostid != null;
+                if (!lobbyAlive)
+                    return;
+
+                LobbyHandler.broadcast(
+                        WebSocketHelper.generateTextMessage("player_quit",
+                                new JSONObject("{'id':'" + player.id + "', 'host':" + hostid + "}")),
+                        lobby.id);
+
             }
         }
     }
 
-    public boolean removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
+    public String removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
         if (lobby.players.length <= 1) {
             lobbyInterfaceRepository.delete(lobby);
             LobbyHandler.sessions.remove(lobby.id);
-            return false;
+            return null;
         }
 
         LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
+        String host = null;
 
         int appendIndex = 0;
         for (int x = 0; x < lobby.players.length; x++) {
@@ -62,8 +66,10 @@ public class LobbyLeaver {
                 continue;
 
             LobbyPlayer next = lobby.players[x];
-            if (appendIndex == 0)
+            if (appendIndex == 0) {
                 next.host = true;
+                host = next.id;
+            }
 
             newLobbyPlayers[appendIndex] = next;
             appendIndex++;
@@ -71,7 +77,7 @@ public class LobbyLeaver {
 
         lobby.players = newLobbyPlayers;
         lobbyInterfaceRepository.save(lobby);
-        return true;
+        return host;
     }
 
 }
