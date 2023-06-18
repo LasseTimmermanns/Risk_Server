@@ -1,4 +1,2 @@
-### Sensitive Data ###
 src/main/resources/application.properties
-
 *.class
