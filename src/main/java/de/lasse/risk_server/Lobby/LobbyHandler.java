@@ -100,25 +100,37 @@ public class LobbyHandler extends TextWebSocketHandler {
         JSONObject message_json = new JSONObject(message.getPayload());
 
         JSONObject data = message_json.has("data") ? message_json.getJSONObject("data") : null;
+        QueryIdentification queryIdentification = null;
 
         try {
+            queryIdentification = new QueryIdentification(message_json.getString("event"), data.getString("lobbyid"),
+                    data.getString("token"), session);
+        } catch (JSONException e) {
+        }
 
+        try {
             switch (message_json.getString("event")) {
                 case "color_change":
-                    playerSettingsService.performColorChange(data.getString("lobbyid"), data.getString("token"),
-                            data.getString("hex"), session);
+                    playerSettingsService.performColorChange(data.getString("hex"), queryIdentification);
                     break;
                 case "leave":
                     session.close();
                     break;
                 case "privacy_change":
-                    settingsService.changeVisibility(data.getString("lobbyid"), data.getBoolean("isPublic"),
-                            data.getString("token"), session);
+                    settingsService.changeVisibility(data.getBoolean("value"), queryIdentification);
+                    break;
+                case "max_players_change":
+                    settingsService.changeMaxPlayers(data.getInt("value"), queryIdentification);
+                    break;
+                case "turn_timer_change":
+                    settingsService.changeTurnTimer(data.getInt("value"), queryIdentification);
+                    break;
+                case "card_bonus_change":
+                    settingsService.changeCardBonus(data.getBoolean("value"), queryIdentification);
                     break;
                 case "flagposition_update":
-                    playerSettingsService.performFlagPositionChange(data.getString("lobbyid"), data.getString("token"),
-                            data.getDouble("flagx"), data.getDouble("flagy"),
-                            session);
+                    playerSettingsService.performFlagPositionChange(data.getDouble("flagx"), data.getDouble("flagy"),
+                            queryIdentification);
                     break;
                 default:
                     System.out.println("Message not handled in LobbyHandler");

@@ -55,21 +55,23 @@ public class PlayerSettingsService {
         return null;
     }
 
-    public MessageBroadcastTuple changeFlagPosition(String providedLobbyId, String providedToken, double flagx,
-            double flagy, WebSocketSession session) {
-        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(providedLobbyId);
+    public MessageBroadcastTuple changeFlagPosition(double flagx, double flagy,
+            QueryIdentification queryIdentification) {
+        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(queryIdentification.lobbyId);
         if (!lobby_opt.isPresent())
             return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("lobby not valid"),
-                    session);
+                    queryIdentification.session);
 
         Lobby lobby = lobby_opt.get();
 
-        int playerIndex = getPlayerIndex(providedToken, lobby);
+        int playerIndex = getPlayerIndex(queryIdentification.token, lobby);
         if (playerIndex == -1)
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"), session);
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"),
+                    queryIdentification.session);
 
         if (!this.flagPosition.isInside(lobby.mapId, flagx, flagy))
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("coordinates not valid"), session);
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("coordinates not valid"),
+                    queryIdentification.session);
 
         LobbyPlayer player = lobby.players[playerIndex];
 
@@ -83,28 +85,30 @@ public class PlayerSettingsService {
         out.put("flagy", flagy);
 
         return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("flagposition_update", out),
-                providedLobbyId);
+                queryIdentification.lobbyId);
     }
 
-    private MessageBroadcastTuple changeColor(String providedLobbyId, String providedToken,
-            String newColor, WebSocketSession session) {
-        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(providedLobbyId);
+    private MessageBroadcastTuple changeColor(String newColor, QueryIdentification queryIdentification) {
+        Optional<Lobby> lobby_opt = lobbyInterfaceRepository.findById(queryIdentification.lobbyId);
         if (!lobby_opt.isPresent())
             return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("lobby not valid"),
-                    session);
+                    queryIdentification.session);
 
         Lobby lobby = lobby_opt.get();
 
-        int playerIndex = getPlayerIndex(providedToken, lobby);
+        int playerIndex = getPlayerIndex(queryIdentification.token, lobby);
         if (playerIndex == -1)
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"), session);
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("token not valid"),
+                    queryIdentification.session);
 
         if (colorIsOccupied(newColor, lobby))
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color already used"), session);
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color already used"),
+                    queryIdentification.session);
 
         Optional<Color> color = getColor(newColor);
         if (!color.isPresent())
-            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color not valid"), session);
+            return new MessageBroadcastTuple(WebSocketHelper.generateDeclineMessage("color not valid"),
+                    queryIdentification.session);
 
         lobby.players[playerIndex].color = color.get();
         lobbyInterfaceRepository.save(lobby);
@@ -115,22 +119,21 @@ public class PlayerSettingsService {
         out.put("playerid", player.id);
         out.put("color", color.get().toJsonObject());
 
-        return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("color_change", out), providedLobbyId);
+        return new MessageBroadcastTuple(WebSocketHelper.generateTextMessage("color_change", out),
+                queryIdentification.lobbyId);
     }
 
-    public void performColorChange(String providedLobbyId, String providedToken,
-            String newColor, WebSocketSession session) {
+    public void performColorChange(String newColor, QueryIdentification queryIdentification) {
         try {
-            this.changeColor(providedLobbyId, providedToken, newColor, session).execute();
+            this.changeColor(newColor, queryIdentification).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void performFlagPositionChange(String providedLobbyId, String providedToken,
-            double flagx, double flagy, WebSocketSession session) {
+    public void performFlagPositionChange(double flagx, double flagy, QueryIdentification queryIdentification) {
         try {
-            this.changeFlagPosition(providedLobbyId, providedToken, flagx, flagy, session).execute();
+            this.changeFlagPosition(flagx, flagy, queryIdentification).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }

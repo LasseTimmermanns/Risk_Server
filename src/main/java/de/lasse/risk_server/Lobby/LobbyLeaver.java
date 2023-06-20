@@ -51,11 +51,12 @@ public class LobbyLeaver {
     }
 
     public String removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
-        if (lobby.players.length <= 1) {
-            lobbyInterfaceRepository.delete(lobby);
-            LobbyHandler.sessions.remove(lobby.id);
-            return null;
-        }
+
+        // if (lobby.players.length <= 1) {
+        // lobbyInterfaceRepository.delete(lobby);
+        // LobbyHandler.sessions.remove(lobby.id);
+        // return null;
+        // }
 
         LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.players.length - 1];
         String host = null;
