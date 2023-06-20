@@ -72,9 +72,6 @@ public class LobbyHandler extends TextWebSocketHandler {
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
 
-        // DisplayMap map = mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
-        // mapInterfaceRepository.findDisplayMapByName(lobby.mapName);
-
         double[] flag_position = flagPosition.generateRandomValidCoordinates(lobby.mapId);
 
         LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,

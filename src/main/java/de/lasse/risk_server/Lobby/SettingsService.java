@@ -44,7 +44,7 @@ public class SettingsService {
 
         LobbyHandler.broadcast(
                 WebSocketHelper.generateTextMessage(queryIdentification.event,
-                        new JSONObject("{'is_public':" + isPublic + "}")),
+                        new JSONObject("{'value':" + isPublic + "}")),
                 lobby.id);
     }
 
@@ -59,7 +59,7 @@ public class SettingsService {
 
         LobbyHandler.broadcast(
                 WebSocketHelper.generateTextMessage(queryIdentification.event,
-                        new JSONObject("{'is_fixed':" + isFixed + "}")),
+                        new JSONObject("{'value':" + isFixed + "}")),
                 lobby.id);
     }
 
@@ -74,7 +74,7 @@ public class SettingsService {
 
         LobbyHandler.broadcast(
                 WebSocketHelper.generateTextMessage(queryIdentification.event,
-                        new JSONObject("{'turn_timer':" + turnTimer + "}")),
+                        new JSONObject("{'value':" + turnTimer + "}")),
                 lobby.id);
     }
 
@@ -88,7 +88,7 @@ public class SettingsService {
 
         LobbyHandler.broadcast(
                 WebSocketHelper.generateTextMessage(queryIdentification.event,
-                        new JSONObject("{'max_players':" + maxPlayers + "}")),
+                        new JSONObject("{'value':" + maxPlayers + "}")),
                 lobby.id);
     }
 }
