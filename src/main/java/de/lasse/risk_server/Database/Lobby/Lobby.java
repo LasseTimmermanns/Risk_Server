@@ -3,6 +3,7 @@ package de.lasse.risk_server.Database.Lobby;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import nonapi.io.github.classgraph.json.Id;
 
@@ -12,25 +13,31 @@ public class Lobby {
     @Id
     public String id;
 
+    @Field("max_players")
     public int maxPlayers;
 
+    @Field("turn_timer")
     public int turnTimer;
 
-    public String cardBonus;
+    @Field("is_fixed")
+    public boolean isFixed;
 
+    @Field("map_id")
     public String mapId;
 
+    @Field("creation_date")
     public long creationDate;
 
     public LobbyPlayer[] players;
 
+    @Field("is_public")
     public boolean isPublic;
 
-    public Lobby(int maxPlayers, int turnTimer, String cardBonus, String mapId, long creationDate,
+    public Lobby(int maxPlayers, int turnTimer, boolean isFixed, String mapId, long creationDate,
             LobbyPlayer[] players, boolean isPublic) {
         this.maxPlayers = maxPlayers;
         this.turnTimer = turnTimer;
-        this.cardBonus = cardBonus;
+        this.isFixed = isFixed;
         this.mapId = mapId;
         this.players = players;
         this.creationDate = creationDate;
@@ -40,11 +47,11 @@ public class Lobby {
     public JSONObject toJsonObject() {
         JSONObject out = new JSONObject();
         out.put("id", id);
-        out.put("mapId", mapId);
-        out.put("maxPlayers", maxPlayers);
-        out.put("turnTimer", turnTimer);
-        out.put("isPublic", isPublic);
-        out.put("cardBonus", cardBonus);
+        out.put("map_id", mapId);
+        out.put("max_players", maxPlayers);
+        out.put("turn_timer", turnTimer);
+        out.put("is_public", isPublic);
+        out.put("is_fixed", this.isFixed);
 
         JSONArray playerArray = new JSONArray();
         for (LobbyPlayer player : players) {
@@ -56,7 +63,7 @@ public class Lobby {
     }
 
     public static Lobby generateDefault() {
-        Lobby out = new Lobby(6, 60, "fixed", "classic", System.currentTimeMillis(), new LobbyPlayer[0], false);
+        Lobby out = new Lobby(6, 60, true, "classic", System.currentTimeMillis(), new LobbyPlayer[0], false);
         return out;
     }
 }
