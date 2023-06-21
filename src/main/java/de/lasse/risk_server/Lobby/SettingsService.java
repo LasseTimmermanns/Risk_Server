@@ -17,6 +17,9 @@ public class SettingsService {
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
+    @Autowired
+    PlayerSettingsService playerSettingsService;
+
     public boolean isAuthorized(Lobby lobby, String token) {
         Optional<LobbyPlayer> player = Arrays.stream(lobby.players).filter(p -> p.host && p.token.equals(token))
                 .findFirst();
@@ -90,5 +93,21 @@ public class SettingsService {
                 WebSocketHelper.generateTextMessage(queryIdentification.event,
                         new JSONObject("{'value':" + maxPlayers + "}")),
                 lobby.id);
+    }
+
+    public void changeMap(String mapId, QueryIdentification queryIdentification) throws Exception {
+        Lobby lobby = authorizationCheck(queryIdentification);
+        if (lobby == null)
+            return;
+
+        lobby.mapId = mapId;
+        lobbyInterfaceRepository.save(lobby);
+
+        LobbyHandler.broadcast(
+                WebSocketHelper.generateTextMessage(queryIdentification.event,
+                        new JSONObject("{'value':" + mapId + "}")),
+                lobby.id);
+
+        playerSettingsService.updateAllFlagPositions(lobby);
     }
 }

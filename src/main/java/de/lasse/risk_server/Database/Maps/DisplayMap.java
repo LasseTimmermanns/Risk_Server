@@ -1,28 +1,36 @@
 package de.lasse.risk_server.Database.Maps;
 
-import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Document(collection = "maps")
 public class DisplayMap {
 
     @Id
+    @JsonView(Views.DisplayMapView.class)
     public String id;
 
     @Field("display_width")
-    public int width;
+    @JsonView(Views.BackgroundMapView.class)
+    public int display_width;
 
     @Field("display_height")
-    public int height;
+    @JsonView(Views.BackgroundMapView.class)
+    public int display_height;
 
-    public JSONObject toJsonObject() {
-        JSONObject json = new JSONObject();
+    @Field("display_path")
+    @JsonView(Views.MiniatureMapView.class)
+    public String path;
 
-        json.put("id", this.id);
-        json.put("width", this.width);
-        json.put("height", this.height);
-        return json;
-    }
+    @Field("width")
+    @JsonView(Views.MiniatureMapView.class)
+    public int svg_width;
+
+    @Field("height")
+    @JsonView(Views.MiniatureMapView.class)
+    public int svg_height;
+
 }

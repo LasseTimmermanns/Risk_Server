@@ -108,7 +108,7 @@ public class LobbyHandler extends TextWebSocketHandler {
         try {
             switch (message_json.getString("event")) {
                 case "color_change":
-                    playerSettingsService.performColorChange(data.getString("hex"), queryIdentification);
+                    playerSettingsService.changeColor(data.getString("hex"), queryIdentification);
                     break;
                 case "leave":
                     session.close();
@@ -125,8 +125,11 @@ public class LobbyHandler extends TextWebSocketHandler {
                 case "card_bonus_change":
                     settingsService.changeCardBonus(data.getBoolean("value"), queryIdentification);
                     break;
+                case "map_change":
+                    settingsService.changeMap(data.getString("value"), queryIdentification);
+                    break;
                 case "flagposition_update":
-                    playerSettingsService.performFlagPositionChange(data.getDouble("flagx"), data.getDouble("flagy"),
+                    playerSettingsService.changeFlagPosition(data.getDouble("flagx"), data.getDouble("flagy"),
                             queryIdentification);
                     break;
                 default:

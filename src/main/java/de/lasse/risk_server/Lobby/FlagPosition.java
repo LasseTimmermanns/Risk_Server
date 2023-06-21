@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.lasse.risk_server.Database.Maps.DisplayMap;
+import de.lasse.risk_server.Database.Maps.DisplayMapInterfaceRepository;
 import de.lasse.risk_server.Database.Maps.DisplayMatrixRepository;
-import de.lasse.risk_server.Database.Maps.MapInterfaceRepository;
 
 @Service
 public class FlagPosition {
@@ -14,24 +14,28 @@ public class FlagPosition {
     DisplayMatrixRepository displayMatrixRepository;
 
     @Autowired
-    MapInterfaceRepository mapInterfaceRepository;
+    DisplayMapInterfaceRepository displayMapInterfaceRepository;
 
     public boolean isInside(DisplayMap map, double flagx, double flagy) {
-        if (flagx > map.width || flagy > map.height)
+        if (flagx > map.display_width || flagy > map.display_height)
             return false;
         return this.displayMatrixRepository.getAccessibility(map.id, (int) flagx, (int) flagy);
     }
 
     public boolean isInside(String mapId, double flagx, double flagy) {
-        return this.isInside(this.mapInterfaceRepository.findDisplayMapById(mapId), flagx, flagy);
+        return this.isInside(this.displayMapInterfaceRepository.findDisplayMapById(mapId), flagx, flagy);
     }
 
     public double[] generateRandomValidCoordinates(String mapId) {
-        DisplayMap map = this.mapInterfaceRepository.findDisplayMapById(mapId);
+        DisplayMap map = this.displayMapInterfaceRepository.findDisplayMapById(mapId);
+        return generateRandomValidCoordinates(map);
+    }
+
+    public double[] generateRandomValidCoordinates(DisplayMap map) {
         double x, y;
         do {
-            x = Math.random() * map.width;
-            y = Math.random() * map.height;
+            x = Math.random() * map.display_width;
+            y = Math.random() * map.display_height;
         } while (!this.isInside(map, x, y));
 
         return new double[] { x, y };
