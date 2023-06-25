@@ -33,13 +33,13 @@ public class MapController {
 
     @RequestMapping(value = "/maps/{map_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> getMap(@PathVariable String map_id) {
+    public ResponseEntity<Map> getMap(@PathVariable String map_id) {
         try {
             Map map = mapInterfaceRepository.findMapById(map_id);
-            return new ResponseEntity<String>(map.toJsonObject().toString(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map>(map, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             System.out.println("Couldnt find " + map_id);
-            return new ResponseEntity<String>("Map not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

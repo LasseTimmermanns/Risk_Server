@@ -132,6 +132,8 @@ public class LobbyHandler extends TextWebSocketHandler {
                     playerSettingsService.changeFlagPosition(data.getDouble("flagx"), data.getDouble("flagy"),
                             queryIdentification);
                     break;
+                case "start_game":
+                    settingsService.startGame(queryIdentification);
                 default:
                     System.out.println("Message not handled in LobbyHandler");
                     System.out.println(message_json.toString());

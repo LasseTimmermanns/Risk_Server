@@ -1,5 +1,7 @@
 package de.lasse.risk_server.Lobby;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ public class SettingsService {
         return player.isPresent();
     }
 
-    public Lobby authorizationCheck(QueryIdentification queryIdentification) throws Exception {
+    public Lobby authorizationCheck(QueryIdentification queryIdentification) throws IOException {
         Lobby lobby = lobbyInterfaceRepository.findById(queryIdentification.lobbyId).orElseThrow();
         if (!isAuthorized(lobby, queryIdentification.token)) {
             queryIdentification.session.sendMessage(WebSocketHelper.generateDeclineMessage("Not Authorized"));
@@ -37,7 +39,7 @@ public class SettingsService {
     }
 
     public void changeVisibility(boolean isPublic, QueryIdentification queryIdentification)
-            throws Exception {
+            throws IOException {
         Lobby lobby = authorizationCheck(queryIdentification);
         if (lobby == null)
             return;
@@ -52,7 +54,7 @@ public class SettingsService {
     }
 
     public void changeCardBonus(boolean isFixed, QueryIdentification queryIdentification)
-            throws Exception {
+            throws IOException {
         Lobby lobby = authorizationCheck(queryIdentification);
         if (lobby == null)
             return;
@@ -67,7 +69,7 @@ public class SettingsService {
     }
 
     public void changeTurnTimer(int turnTimer, QueryIdentification queryIdentification)
-            throws Exception {
+            throws IOException {
         Lobby lobby = authorizationCheck(queryIdentification);
         if (lobby == null)
             return;
@@ -81,7 +83,7 @@ public class SettingsService {
                 lobby.id);
     }
 
-    public void changeMaxPlayers(int maxPlayers, QueryIdentification queryIdentification) throws Exception {
+    public void changeMaxPlayers(int maxPlayers, QueryIdentification queryIdentification) throws IOException {
         Lobby lobby = authorizationCheck(queryIdentification);
         if (lobby == null)
             return;
@@ -95,7 +97,7 @@ public class SettingsService {
                 lobby.id);
     }
 
-    public void changeMap(String mapId, QueryIdentification queryIdentification) throws Exception {
+    public void changeMap(String mapId, QueryIdentification queryIdentification) throws IOException {
         Lobby lobby = authorizationCheck(queryIdentification);
         if (lobby == null)
             return;
@@ -109,5 +111,14 @@ public class SettingsService {
                 lobby.id);
 
         playerSettingsService.updateAllFlagPositions(lobby);
+    }
+
+    public void startGame(QueryIdentification queryIdentification) throws IOException {
+        Lobby lobby = authorizationCheck(queryIdentification);
+        if (lobby == null)
+            return;
+
+        Game game = new Game();
+
     }
 }
