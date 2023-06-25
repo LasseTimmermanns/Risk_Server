@@ -11,21 +11,69 @@ import de.lasse.risk_server.Database.Game.Territory.GameTerritory;
 public class Game {
 
     @Id
-    public String id;
+    private String id;
 
     @Field("map_id")
-    public String mapId;
+    private String mapId;
 
     @Field("players")
-    public Player[] players;
+    private Player[] players;
 
     @Field("territories")
     public GameTerritory[] territories;
 
     @Field("move")
-    public int move;
+    private int move;
 
     @Field("settings")
-    public SettingsObj settings;
+    private SettingsObj settings;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getMapId() {
+        return this.mapId;
+    }
+
+    public void setMapId(String mapId) {
+        this.mapId = mapId;
+    }
+
+    public Player[] getPlayers() {
+        return this.players;
+    }
+
+    public void setPlayers(Player[] players) {
+        this.players = players;
+    }
+
+    public GameTerritory[] getTerritories() {
+        return this.territories;
+    }
+
+    public void setTerritories(GameTerritory[] territories) {
+        this.territories = territories;
+    }
+
+    public int getMove() {
+        return this.move;
+    }
+
+    public void setMove(int move) {
+        this.move = move;
+    }
+
+    public SettingsObj getSettings() {
+        return this.settings;
+    }
+
+    public void setSettings(SettingsObj settings) {
+        this.settings = settings;
+    }
 
 }

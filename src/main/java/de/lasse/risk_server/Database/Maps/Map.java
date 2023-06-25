@@ -1,7 +1,5 @@
 package de.lasse.risk_server.Database.Maps;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,17 +13,36 @@ public class Map {
 
     private Territory[] territories;
 
-    public JSONObject toJsonObject() {
-        JSONObject obj = new JSONObject();
-        obj.put("id", this.id);
-        obj.put("width", this.width);
-        obj.put("height", this.height);
+    public String getId() {
+        return this.id;
+    }
 
-        JSONArray jsonArray = new JSONArray();
-        for (Territory territory : territories)
-            jsonArray.put(territory.toJsonObject());
-        obj.put("territories", jsonArray);
-        return obj;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public Territory[] getTerritories() {
+        return this.territories;
+    }
+
+    public void setTerritories(Territory[] territories) {
+        this.territories = territories;
     }
 
 }

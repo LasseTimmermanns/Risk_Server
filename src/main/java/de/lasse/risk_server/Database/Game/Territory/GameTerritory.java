@@ -5,10 +5,34 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class GameTerritory {
 
     @Field("territory_id")
-    public int territoryId;
+    private int territoryId;
 
-    public int troops;
+    private int troops;
 
-    public int owner;
+    private int owner;
+
+    public int getTerritoryId() {
+        return this.territoryId;
+    }
+
+    public void setTerritoryId(int territoryId) {
+        this.territoryId = territoryId;
+    }
+
+    public int getTroops() {
+        return this.troops;
+    }
+
+    public void setTroops(int troops) {
+        this.troops = troops;
+    }
+
+    public int getOwner() {
+        return this.owner;
+    }
+
+    public void setOwner(int owner) {
+        this.owner = owner;
+    }
 
 }

@@ -7,14 +7,54 @@ import de.lasse.risk_server.Database.Lobby.Color;
 public class Player {
 
     @Id
-    public String id;
+    private String id;
 
-    public String token;
+    private String token;
 
-    public String name;
+    private String name;
 
-    public Color color;
+    private Color color;
 
-    public int seat;
+    private int seat;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Color getColor() {
+        return this.color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public int getSeat() {
+        return this.seat;
+    }
+
+    public void setSeat(int seat) {
+        this.seat = seat;
+    }
 
 }
