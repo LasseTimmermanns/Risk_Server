@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
@@ -14,12 +13,21 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import de.lasse.risk_server.Database.Lobby.Lobby;
-import de.lasse.risk_server.Database.Lobby.LobbyInterfaceRepository;
-import de.lasse.risk_server.Database.Lobby.LobbyPlayer;
-import de.lasse.risk_server.Database.Maps.MapInterfaceRepository;
-import de.lasse.risk_server.Utils.QueryUtil;
-import de.lasse.risk_server.Utils.TokenGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.lasse.risk_server.Game.Map.MapInterfaceRepository;
+import de.lasse.risk_server.Lobby.Flag.FlagPosition;
+import de.lasse.risk_server.Lobby.Leave.LobbyLeaver;
+import de.lasse.risk_server.Lobby.Lobby.Lobby;
+import de.lasse.risk_server.Lobby.Lobby.LobbyInterfaceRepository;
+import de.lasse.risk_server.Lobby.LobbyPlayer.LobbyPlayer;
+import de.lasse.risk_server.Lobby.Settings.PlayerSettingsService;
+import de.lasse.risk_server.Lobby.Settings.SettingsService;
+import de.lasse.risk_server.Shared.QueryIdentification;
+import de.lasse.risk_server.Shared.QueryUtil;
+import de.lasse.risk_server.Shared.TokenGenerator;
+import de.lasse.risk_server.Shared.WebSocketHelper;
 
 @Service
 public class LobbyHandler extends TextWebSocketHandler {
@@ -62,74 +70,79 @@ public class LobbyHandler extends TextWebSocketHandler {
             return;
         }
 
-        if (lobby.players.length >= lobby.maxPlayers) {
+        if (lobby.getPlayers().length >= lobby.getMaxPlayers()) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby is full"));
             session.close();
             return;
         }
 
-        int position = lobby.players.length;
+        int position = lobby.getPlayers().length;
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
 
-        double[] flag_position = flagPosition.generateRandomValidCoordinates(lobby.mapId);
+        double[] flag_position = flagPosition.generateRandomValidCoordinates(lobby.getMapId());
 
         LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,
                 playerSettingsService.getUnoccupiedColor(lobby), position, flag_position[0], flag_position[1]);
 
-        lobby.players = Arrays.copyOf(lobby.players, position + 1);
-        lobby.players[position] = lobbyPlayer;
+        LobbyPlayer[] players = Arrays.copyOf(lobby.getPlayers(), position + 1);
+        players[position] = lobbyPlayer;
+        lobby.setPlayers(players);
+
         lobbyInterfaceRepository.save(lobby);
 
-        session.sendMessage(
-                WebSocketHelper.generateTextMessage("token_granted",
-                        new JSONObject("{'token':'" + token + "', 'playerid':'" + uuid + "'}")));
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("token", token);
+        map.put("playerid", uuid);
 
-        session.sendMessage(WebSocketHelper.generateTextMessage("join_accepted", lobby.toJsonObject()));
+        session.sendMessage(WebSocketHelper.generateTextMessage("token_granted", map));
 
-        broadcast(WebSocketHelper.generateTextMessage("join", lobbyPlayer.toJsonObject()), lobbyid);
+        session.sendMessage(WebSocketHelper.generateTextMessage("join_accepted", lobby));
+
+        broadcast(WebSocketHelper.generateTextMessage("join", lobbyPlayer), lobbyid);
+
         sessions.get(lobbyid).add(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println(message.getPayload());
-        JSONObject message_json = new JSONObject(message.getPayload());
+        JsonNode message_json = new ObjectMapper().readTree(message.getPayload());
 
-        JSONObject data = message_json.has("data") ? message_json.getJSONObject("data") : null;
+        JsonNode data = message_json.has("data") ? message_json.get("data") : null;
         QueryIdentification queryIdentification = null;
 
         try {
-            queryIdentification = new QueryIdentification(message_json.getString("event"), data.getString("lobbyid"),
-                    data.getString("token"), session);
-        } catch (JSONException e) {
+            queryIdentification = new QueryIdentification(message_json.get("event").asText(),
+                    data.get("lobbyid").asText(), data.get("token").asText(), session);
+        } catch (NullPointerException e) {
         }
 
         try {
-            switch (message_json.getString("event")) {
+            switch (message_json.get("event").asText()) {
                 case "color_change":
-                    playerSettingsService.changeColor(data.getString("hex"), queryIdentification);
+                    playerSettingsService.changeColor(data.get("hex").asText(), queryIdentification);
                     break;
                 case "leave":
                     session.close();
                     break;
                 case "privacy_change":
-                    settingsService.changeVisibility(data.getBoolean("value"), queryIdentification);
+                    settingsService.changeVisibility(data.get("value").asBoolean(), queryIdentification);
                     break;
                 case "max_players_change":
-                    settingsService.changeMaxPlayers(data.getInt("value"), queryIdentification);
+                    settingsService.changeMaxPlayers(data.get("value").asInt(), queryIdentification);
                     break;
                 case "turn_timer_change":
-                    settingsService.changeTurnTimer(data.getInt("value"), queryIdentification);
+                    settingsService.changeTurnTimer(data.get("value").asInt(), queryIdentification);
                     break;
                 case "card_bonus_change":
-                    settingsService.changeCardBonus(data.getBoolean("value"), queryIdentification);
+                    settingsService.changeCardBonus(data.get("value").asBoolean(), queryIdentification);
                     break;
                 case "map_change":
-                    settingsService.changeMap(data.getString("value"), queryIdentification);
+                    settingsService.changeMap(data.get("value").asText(), queryIdentification);
                     break;
                 case "flagposition_update":
-                    playerSettingsService.changeFlagPosition(data.getDouble("flagx"), data.getDouble("flagy"),
+                    playerSettingsService.changeFlagPosition(data.get("flagx").asDouble(), data.get("flagy").asDouble(),
                             queryIdentification);
                     break;
                 case "start_game":
@@ -139,8 +152,8 @@ public class LobbyHandler extends TextWebSocketHandler {
                     System.out.println(message_json.toString());
                     break;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("Nullpointer in LobbyHandler");
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Bad Request"));
         }
     }
