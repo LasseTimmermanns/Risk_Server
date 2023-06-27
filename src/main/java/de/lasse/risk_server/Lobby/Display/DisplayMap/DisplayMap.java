@@ -4,39 +4,25 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-
 @Document(collection = "maps")
 public class DisplayMap {
 
     @Id
-    @JsonView(Views.DisplayMapView.class)
     private String id;
 
     @Field("display_width")
-    @JsonProperty("display_width")
-    @JsonView(Views.BackgroundMapView.class)
     private int displayWidth;
 
     @Field("display_height")
-    @JsonProperty("display_height")
-    @JsonView(Views.BackgroundMapView.class)
     private int displayHeight;
 
     @Field("display_path")
-    @JsonProperty("display_path")
-    @JsonView(Views.MiniatureMapView.class)
-    private String path;
+    private String displayPath;
 
     @Field("svg_width")
-    @JsonProperty("svg_width")
-    @JsonView(Views.MiniatureMapView.class)
     private int svgWidth;
 
     @Field("svg_height")
-    @JsonProperty("svg_height")
-    @JsonView(Views.MiniatureMapView.class)
     private int svgHeight;
 
     public String getId() {
@@ -63,12 +49,12 @@ public class DisplayMap {
         this.displayHeight = displayHeight;
     }
 
-    public String getPath() {
-        return this.path;
+    public String getDisplayPath() {
+        return this.displayPath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setDisplayPath(String path) {
+        this.displayPath = path;
     }
 
     public int getSvgWidth() {

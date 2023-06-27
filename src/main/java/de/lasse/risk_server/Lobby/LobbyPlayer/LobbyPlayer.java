@@ -1,7 +1,8 @@
 package de.lasse.risk_server.Lobby.LobbyPlayer;
 
-import de.lasse.risk_server.Lobby.Color.Color;
-import nonapi.io.github.classgraph.json.Id;
+import org.springframework.data.annotation.Id;
+
+import de.lasse.risk_server.Shared.Color.Color;
 
 public class LobbyPlayer {
 

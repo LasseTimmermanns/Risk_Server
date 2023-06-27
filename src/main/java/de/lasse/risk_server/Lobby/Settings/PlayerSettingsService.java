@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.lasse.risk_server.Lobby.LobbyHandler;
-import de.lasse.risk_server.Lobby.Color.Color;
-import de.lasse.risk_server.Lobby.Color.ColorInterfaceRepository;
 import de.lasse.risk_server.Lobby.Display.DisplayMap.DisplayMap;
 import de.lasse.risk_server.Lobby.Display.DisplayMap.DisplayMapInterfaceRepository;
 import de.lasse.risk_server.Lobby.Flag.FlagPosition;
@@ -22,6 +20,8 @@ import de.lasse.risk_server.Lobby.Lobby.LobbyInterfaceRepository;
 import de.lasse.risk_server.Lobby.LobbyPlayer.LobbyPlayer;
 import de.lasse.risk_server.Shared.QueryIdentification;
 import de.lasse.risk_server.Shared.WebSocketHelper;
+import de.lasse.risk_server.Shared.Color.Color;
+import de.lasse.risk_server.Shared.Color.ColorInterfaceRepository;
 
 @Service
 public class PlayerSettingsService {
@@ -110,15 +110,15 @@ public class PlayerSettingsService {
 
     public void updateAllFlagPositions(Lobby lobby) throws IOException {
         DisplayMap map = this.displayMapInterfaceRepository.findDisplayMapById(lobby.getMapId());
-        for (LobbyPlayer player : lobby.getPlayers()) {
+        for (LobbyPlayer player : lobby.getLobbyPlayers()) {
             double[] pos = flagPosition.generateRandomValidCoordinates(map);
             this.changeFlagPosition(pos[0], pos[1], lobby, player);
         }
     }
 
     public int getPlayerIndex(String token, Lobby lobby) {
-        for (int i = 0; i < lobby.getPlayers().length; i++) {
-            LobbyPlayer current = lobby.getPlayers()[i];
+        for (int i = 0; i < lobby.getLobbyPlayers().length; i++) {
+            LobbyPlayer current = lobby.getLobbyPlayers()[i];
             if (current.getToken().equals(token))
                 return i;
         }
@@ -126,7 +126,7 @@ public class PlayerSettingsService {
     }
 
     public boolean colorIsOccupied(String hex, Lobby lobby) {
-        for (LobbyPlayer p : lobby.getPlayers()) {
+        for (LobbyPlayer p : lobby.getLobbyPlayers()) {
             if (p.getColor().getHex().equalsIgnoreCase(hex))
                 return true;
         }
@@ -153,7 +153,7 @@ public class PlayerSettingsService {
             return null;
         }
 
-        return new Object[] { lobby, lobby.getPlayers()[playerIndex] };
+        return new Object[] { lobby, lobby.getLobbyPlayers()[playerIndex] };
     }
 
     public static List<Color> getColors() {

@@ -1,4 +1,4 @@
-package de.lasse.risk_server.Lobby.Color;
+package de.lasse.risk_server.Shared.Color;
 
 import java.util.List;
 

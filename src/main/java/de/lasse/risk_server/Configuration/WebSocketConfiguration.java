@@ -7,7 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import de.lasse.risk_server.Game.WebSocket.GameHandler;
+import de.lasse.risk_server.Game.GameHandler;
 import de.lasse.risk_server.Lobby.LobbyHandler;
 
 @Configuration

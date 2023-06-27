@@ -70,13 +70,13 @@ public class LobbyHandler extends TextWebSocketHandler {
             return;
         }
 
-        if (lobby.getPlayers().length >= lobby.getMaxPlayers()) {
+        if (lobby.getLobbyPlayers().length >= lobby.getMaxPlayers()) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby is full"));
             session.close();
             return;
         }
 
-        int position = lobby.getPlayers().length;
+        int position = lobby.getLobbyPlayers().length;
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
 
@@ -85,9 +85,9 @@ public class LobbyHandler extends TextWebSocketHandler {
         LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,
                 playerSettingsService.getUnoccupiedColor(lobby), position, flag_position[0], flag_position[1]);
 
-        LobbyPlayer[] players = Arrays.copyOf(lobby.getPlayers(), position + 1);
+        LobbyPlayer[] players = Arrays.copyOf(lobby.getLobbyPlayers(), position + 1);
         players[position] = lobbyPlayer;
-        lobby.setPlayers(players);
+        lobby.setLobbyPlayers(players);
 
         lobbyInterfaceRepository.save(lobby);
 

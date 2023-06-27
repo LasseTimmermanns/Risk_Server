@@ -11,7 +11,7 @@ public class Map {
 
     private int width, height;
 
-    private Territory[] territories;
+    private MapTerritory[] territories;
 
     public String getId() {
         return this.id;
@@ -37,11 +37,11 @@ public class Map {
         this.height = height;
     }
 
-    public Territory[] getTerritories() {
+    public MapTerritory[] getTerritories() {
         return this.territories;
     }
 
-    public void setTerritories(Territory[] territories) {
+    public void setTerritories(MapTerritory[] territories) {
         this.territories = territories;
     }
 

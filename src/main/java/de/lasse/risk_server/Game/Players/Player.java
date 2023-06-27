@@ -2,7 +2,7 @@ package de.lasse.risk_server.Game.Players;
 
 import org.springframework.data.annotation.Id;
 
-import de.lasse.risk_server.Lobby.Color.Color;
+import de.lasse.risk_server.Shared.Color.Color;
 
 public class Player {
 
@@ -54,6 +54,14 @@ public class Player {
     }
 
     public void setSeat(int seat) {
+        this.seat = seat;
+    }
+
+    public Player(String id, String token, String name, Color color, int seat) {
+        this.id = id;
+        this.token = token;
+        this.name = name;
+        this.color = color;
         this.seat = seat;
     }
 

@@ -1,4 +1,4 @@
-package de.lasse.risk_server.Lobby.Color;
+package de.lasse.risk_server.Shared.Color;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ColorController {
         if (!lobby.isPresent())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        LobbyPlayer[] players = lobby.get().getPlayers();
+        LobbyPlayer[] players = lobby.get().getLobbyPlayers();
         List<Color> allColors = colorInterfaceRepository.findAll();
         List<Color> remainingColors = new LinkedList<Color>();
         String hex;

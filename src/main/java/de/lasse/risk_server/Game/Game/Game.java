@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import de.lasse.risk_server.Game.Players.Player;
-import de.lasse.risk_server.Game.Settings.SettingsObj;
+import de.lasse.risk_server.Game.Settings.SettingsState;
 import de.lasse.risk_server.Game.Territory.GameTerritory;
 
 @Document(collection = "games")
@@ -27,7 +27,7 @@ public class Game {
     private int move;
 
     @Field("settings")
-    private SettingsObj settings;
+    private SettingsState settings;
 
     public String getId() {
         return this.id;
@@ -69,11 +69,21 @@ public class Game {
         this.move = move;
     }
 
-    public SettingsObj getSettings() {
+    public SettingsState getSettings() {
         return this.settings;
     }
 
-    public void setSettings(SettingsObj settings) {
+    public void setSettings(SettingsState settings) {
+        this.settings = settings;
+    }
+
+    public Game(String id, String mapId, Player[] players, GameTerritory[] territories, int move,
+            SettingsState settings) {
+        this.id = id;
+        this.mapId = mapId;
+        this.players = players;
+        this.territories = territories;
+        this.move = move;
         this.settings = settings;
     }
 
