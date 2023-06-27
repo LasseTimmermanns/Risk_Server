@@ -147,12 +147,15 @@ public class LobbyHandler extends TextWebSocketHandler {
                     break;
                 case "start_game":
                     settingsService.startGame(queryIdentification);
+                    break;
                 default:
                     System.out.println("Message not handled in LobbyHandler");
                     System.out.println(message_json.toString());
                     break;
             }
         } catch (NullPointerException e) {
+            System.out.println(message_json.toString());
+            e.printStackTrace();
             System.out.println("Nullpointer in LobbyHandler");
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Bad Request"));
         }

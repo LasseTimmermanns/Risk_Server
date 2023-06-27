@@ -6,15 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.lasse.risk_server.Game.Game.Game;
+import de.lasse.risk_server.Game.Game.GameInterfaceRepository;
+import de.lasse.risk_server.Game.Map.MapInterfaceRepository;
 import de.lasse.risk_server.Game.Map.MapTerritory;
 import de.lasse.risk_server.Game.Players.Player;
 import de.lasse.risk_server.Game.Settings.SettingsState;
+import de.lasse.risk_server.Game.Territory.GameTerritory;
 import de.lasse.risk_server.Lobby.LobbyHandler;
 import de.lasse.risk_server.Lobby.Lobby.Lobby;
 import de.lasse.risk_server.Lobby.Lobby.LobbyInterfaceRepository;
@@ -28,6 +33,12 @@ public class SettingsService {
 
     @Autowired
     LobbyInterfaceRepository lobbyInterfaceRepository;
+
+    @Autowired
+    MapInterfaceRepository mapInterfaceRepository;
+
+    @Autowired
+    GameInterfaceRepository gameInterfaceRepository;
 
     @Autowired
     PlayerSettingsService playerSettingsService;
@@ -137,7 +148,12 @@ public class SettingsService {
         int move = 0;
         SettingsState settingsState = new SettingsState(lobby.isFixed());
         Player[] players = getPlayers(lobby.getLobbyPlayers());
+        GameTerritory[] territories = generateTerritories(players, mapId);
 
+        Game game = new Game(gameId, mapId, players, territories, move, settingsState);
+
+        gameInterfaceRepository.save(game);
+        System.out.println("Lets go");
         // Territories
 
         // Initialize GameHandler
@@ -163,14 +179,44 @@ public class SettingsService {
             Color color = p.getColor();
             int seat = order.get(i);
 
-            out[i] = new Player(id, token, name, color, seat);
+            out[i] = new Player(id, token, name, color, seat, new int[0]);
         }
 
         return out;
     }
 
-    public MapTerritory[] generateTerritories(Player[] players, String mapId) {
-        // MapTerritory[] map = mapRepository.findTerritories(mapId);
-        return null;
+    public GameTerritory[] generateTerritories(Player[] players, String mapId) {
+        int n = mapInterfaceRepository.findTerritoriesNum(mapId);
+        GameTerritory[] territories = divideTerritories(players, n);
+
+        int troopsPerPlayer = 50 - players.length * 5;
+
+        for (Player p : players) {
+            GameTerritory[] ownedTerritories = Arrays.stream(territories).filter(t -> t.getOwner().equals(p.getId()))
+                    .toArray(GameTerritory[]::new);
+
+            int troopsLeft = troopsPerPlayer - ownedTerritories.length;
+            while (troopsLeft > 0) {
+                int rand = (int) (Math.random() * ownedTerritories.length);
+                ownedTerritories[rand].troops++;
+                troopsLeft--;
+            }
+        }
+        return territories;
+    }
+
+    public GameTerritory[] divideTerritories(Player[] players, int numTerritories) {
+        GameTerritory[] territories = new GameTerritory[numTerritories];
+        List<Integer> order = generateRandomOrder(numTerritories);
+        for (int x = 0; x <= territories.length / players.length; x++) {
+            for (int y = 0; y < players.length; y++) {
+                int i = x * players.length + y;
+                if (i >= numTerritories)
+                    break;
+                territories[order.get(i)] = new GameTerritory(order.get(i), 1, players[y].getId());
+            }
+        }
+
+        return territories;
     }
 }

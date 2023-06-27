@@ -17,6 +17,16 @@ public class Player {
 
     private int seat;
 
+    private int[] cards;
+
+    public int[] getCards() {
+        return this.cards;
+    }
+
+    public void setCards(int[] cards) {
+        this.cards = cards;
+    }
+
     public String getId() {
         return this.id;
     }
@@ -57,12 +67,13 @@ public class Player {
         this.seat = seat;
     }
 
-    public Player(String id, String token, String name, Color color, int seat) {
+    public Player(String id, String token, String name, Color color, int seat, int[] cards) {
         this.id = id;
         this.token = token;
         this.name = name;
         this.color = color;
         this.seat = seat;
+        this.cards = cards;
     }
 
 }
