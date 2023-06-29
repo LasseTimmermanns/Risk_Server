@@ -128,6 +128,8 @@ public class SettingsService {
         Game game = gameGenerator.generateGame(lobby);
         gameInterfaceRepository.save(game);
 
+        lobbyInterfaceRepository.delete(lobby);
+
         // Initialize GameHandler
         // game.getId() == lobby.getId() but code like this robuster.
         GameHandler.sessions.put(game.getId(), LobbyHandler.sessions.remove(lobby.getId()));
