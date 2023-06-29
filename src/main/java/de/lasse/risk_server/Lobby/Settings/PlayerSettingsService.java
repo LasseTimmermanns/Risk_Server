@@ -75,7 +75,7 @@ public class PlayerSettingsService {
         lobbyInterfaceRepository.save(lobby);
 
         Map<String, Object> out = new HashMap<>();
-        out.put("playerid", player.getId());
+        out.put("playerId", player.getId());
         out.put("flagx", flagx);
         out.put("flagy", flagy);
 
@@ -102,7 +102,7 @@ public class PlayerSettingsService {
         lobbyInterfaceRepository.save(lobby);
 
         Map<String, Object> out = new HashMap<>();
-        out.put("playerid", player.getId());
+        out.put("playerId", player.getId());
         out.put("color", color.get());
 
         LobbyHandler.broadcast(WebSocketHelper.generateTextMessage("color_change", out), queryIdentification.roomId);
@@ -110,15 +110,15 @@ public class PlayerSettingsService {
 
     public void updateAllFlagPositions(Lobby lobby) throws IOException {
         DisplayMap map = this.displayMapInterfaceRepository.findDisplayMapById(lobby.getMapId());
-        for (LobbyPlayer player : lobby.getLobbyPlayers()) {
+        for (LobbyPlayer player : lobby.getPlayers()) {
             double[] pos = flagPosition.generateRandomValidCoordinates(map);
             this.changeFlagPosition(pos[0], pos[1], lobby, player);
         }
     }
 
     public int getPlayerIndex(String token, Lobby lobby) {
-        for (int i = 0; i < lobby.getLobbyPlayers().length; i++) {
-            LobbyPlayer current = lobby.getLobbyPlayers()[i];
+        for (int i = 0; i < lobby.getPlayers().length; i++) {
+            LobbyPlayer current = lobby.getPlayers()[i];
             if (current.getToken().equals(token))
                 return i;
         }
@@ -126,7 +126,7 @@ public class PlayerSettingsService {
     }
 
     public boolean colorIsOccupied(String hex, Lobby lobby) {
-        for (LobbyPlayer p : lobby.getLobbyPlayers()) {
+        for (LobbyPlayer p : lobby.getPlayers()) {
             if (p.getColor().getHex().equalsIgnoreCase(hex))
                 return true;
         }
@@ -153,7 +153,7 @@ public class PlayerSettingsService {
             return null;
         }
 
-        return new Object[] { lobby, lobby.getLobbyPlayers()[playerIndex] };
+        return new Object[] { lobby, lobby.getPlayers()[playerIndex] };
     }
 
     public static List<Color> getColors() {

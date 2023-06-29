@@ -35,7 +35,7 @@ public class SettingsService {
     GameGenerator gameGenerator;
 
     public boolean isAuthorized(Lobby lobby, String token) {
-        Optional<LobbyPlayer> player = Arrays.stream(lobby.getLobbyPlayers())
+        Optional<LobbyPlayer> player = Arrays.stream(lobby.getPlayers())
                 .filter(p -> p.getHost() && p.getToken().equals(token))
                 .findFirst();
         return player.isPresent();

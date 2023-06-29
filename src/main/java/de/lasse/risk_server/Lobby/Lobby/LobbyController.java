@@ -45,7 +45,7 @@ public class LobbyController {
         if (lobby.isPresent())
             return new ResponseEntity<Lobby>(lobby.get(), HttpStatus.ACCEPTED);
 
-        System.out.println("No Lobby found with GameId:" + game_id);
+        System.out.println("No Lobby found with gameId:" + game_id);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -56,7 +56,7 @@ public class LobbyController {
         lobbyInterfaceRepository.save(l);
 
         LobbyHandler.sessions.put(l.getId(), new ArrayList<>());
-        return new ResponseEntity<Map<String, String>>(Map.of("lobbyid", l.getId()), HttpStatus.ACCEPTED);
+        return new ResponseEntity<Map<String, String>>(Map.of("lobbyId", l.getId()), HttpStatus.ACCEPTED);
     }
 
 }

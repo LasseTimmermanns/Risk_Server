@@ -29,16 +29,16 @@ public class ColorController {
     LobbyInterfaceRepository lobbyInterfaceRepository;
 
     @RequestMapping(value = "settings/colors/remaining", method = RequestMethod.GET)
-    public ResponseEntity<List<Color>> getRemainingColors(@RequestParam Optional<String> lobbyid) {
-        if (!lobbyid.isPresent())
+    public ResponseEntity<List<Color>> getRemainingColors(@RequestParam Optional<String> lobbyId) {
+        if (!lobbyId.isPresent())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        Optional<Lobby> lobby = lobbyInterfaceRepository.findById(lobbyid.get());
+        Optional<Lobby> lobby = lobbyInterfaceRepository.findById(lobbyId.get());
 
         if (!lobby.isPresent())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        LobbyPlayer[] players = lobby.get().getLobbyPlayers();
+        LobbyPlayer[] players = lobby.get().getPlayers();
         List<Color> allColors = colorInterfaceRepository.findAll();
         List<Color> remainingColors = new LinkedList<Color>();
         String hex;

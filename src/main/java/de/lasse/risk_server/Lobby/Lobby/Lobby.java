@@ -28,18 +28,18 @@ public class Lobby {
     private long creationDate;
 
     @Field("players")
-    private LobbyPlayer[] lobbyPlayers;
+    private LobbyPlayer[] players;
 
     @Field("is_public")
     private boolean isPublic;
 
     public Lobby(int maxPlayers, int turnTimer, boolean isFixed, String mapId, long creationDate,
-            LobbyPlayer[] lobbyPlayers, boolean isPublic) {
+            LobbyPlayer[] players, boolean isPublic) {
         this.maxPlayers = maxPlayers;
         this.turnTimer = turnTimer;
         this.isFixed = isFixed;
         this.mapId = mapId;
-        this.lobbyPlayers = lobbyPlayers;
+        this.players = players;
         this.creationDate = creationDate;
         this.isPublic = isPublic;
     }
@@ -97,12 +97,12 @@ public class Lobby {
         this.creationDate = creation_date;
     }
 
-    public LobbyPlayer[] getLobbyPlayers() {
-        return this.lobbyPlayers;
+    public LobbyPlayer[] getPlayers() {
+        return this.players;
     }
 
-    public void setLobbyPlayers(LobbyPlayer[] players) {
-        this.lobbyPlayers = players;
+    public void setPlayers(LobbyPlayer[] players) {
+        this.players = players;
     }
 
     public boolean isPublic() {

@@ -28,7 +28,7 @@ public class GameGenerator {
         String mapId = lobby.getMapId();
         int move = 0;
         SettingsState settingsState = new SettingsState(lobby.isFixed());
-        Player[] players = getPlayers(lobby.getLobbyPlayers());
+        Player[] players = getPlayers(lobby.getPlayers());
         GameTerritory[] territories = generateTerritories(players, mapId);
 
         return new Game(gameId, mapId, players, territories, move, settingsState);

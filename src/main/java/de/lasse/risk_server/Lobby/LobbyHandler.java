@@ -54,29 +54,29 @@ public class LobbyHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String lobbyid = QueryUtil.getQueryValue("lobby", session.getUri().getQuery());
+        String lobbyId = QueryUtil.getQueryValue("lobby", session.getUri().getQuery());
         String playername = QueryUtil.getQueryValue("playername", session.getUri().getQuery());
 
-        if (lobbyid == null || playername == null) {
+        if (lobbyId == null || playername == null) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Not enough data provided"));
             session.close();
             return;
         }
 
-        Lobby lobby = lobbyInterfaceRepository.findById(lobbyid).orElse(null);
-        if (lobby == null || !sessions.containsKey(lobbyid)) {
+        Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElse(null);
+        if (lobby == null || !sessions.containsKey(lobbyId)) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby not found"));
             session.close();
             return;
         }
 
-        if (lobby.getLobbyPlayers().length >= lobby.getMaxPlayers()) {
+        if (lobby.getPlayers().length >= lobby.getMaxPlayers()) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby is full"));
             session.close();
             return;
         }
 
-        int position = lobby.getLobbyPlayers().length;
+        int position = lobby.getPlayers().length;
         String token = TokenGenerator.generateToken();
         String uuid = TokenGenerator.generateToken();
 
@@ -85,23 +85,23 @@ public class LobbyHandler extends TextWebSocketHandler {
         LobbyPlayer lobbyPlayer = new LobbyPlayer(uuid, playername, token, position == 0,
                 playerSettingsService.getUnoccupiedColor(lobby), position, flag_position[0], flag_position[1]);
 
-        LobbyPlayer[] players = Arrays.copyOf(lobby.getLobbyPlayers(), position + 1);
+        LobbyPlayer[] players = Arrays.copyOf(lobby.getPlayers(), position + 1);
         players[position] = lobbyPlayer;
-        lobby.setLobbyPlayers(players);
+        lobby.setPlayers(players);
 
         lobbyInterfaceRepository.save(lobby);
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("token", token);
-        map.put("playerid", uuid);
+        map.put("playerId", uuid);
 
         session.sendMessage(WebSocketHelper.generateTextMessage("token_granted", map));
 
         session.sendMessage(WebSocketHelper.generateTextMessage("join_accepted", lobby));
 
-        broadcast(WebSocketHelper.generateTextMessage("join", lobbyPlayer), lobbyid);
+        broadcast(WebSocketHelper.generateTextMessage("join", lobbyPlayer), lobbyId);
 
-        sessions.get(lobbyid).add(session);
+        sessions.get(lobbyId).add(session);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class LobbyHandler extends TextWebSocketHandler {
 
         try {
             queryIdentification = new QueryIdentification(message_json.get("event").asText(),
-                    data.get("lobbyid").asText(), data.get("token").asText(), session);
+                    data.get("lobbyId").asText(), data.get("token").asText(), session);
         } catch (NullPointerException e) {
         }
 
@@ -161,8 +161,8 @@ public class LobbyHandler extends TextWebSocketHandler {
         }
     }
 
-    public static void broadcast(TextMessage message, String lobbyid) throws IOException {
-        for (WebSocketSession session : sessions.get(lobbyid)) {
+    public static void broadcast(TextMessage message, String lobbyId) throws IOException {
+        for (WebSocketSession session : sessions.get(lobbyId)) {
             if (!session.isOpen()) {
                 System.out.println("Try Broadcast but session is closed");
                 continue;

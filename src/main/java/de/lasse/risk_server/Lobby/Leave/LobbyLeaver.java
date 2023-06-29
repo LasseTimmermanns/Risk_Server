@@ -38,7 +38,7 @@ public class LobbyLeaver {
 
                 lobbyEntry.getValue().remove(i);
                 Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElseThrow();
-                LobbyPlayer player = lobby.getLobbyPlayers()[i];
+                LobbyPlayer player = lobby.getPlayers()[i];
                 String hostid = removeSession(lobby, player);
 
                 boolean lobbyAlive = hostid != null;
@@ -58,21 +58,21 @@ public class LobbyLeaver {
 
     public String removeSession(Lobby lobby, LobbyPlayer removingPlayer) {
 
-        if (lobby.getLobbyPlayers().length <= 1) {
+        if (lobby.getPlayers().length <= 1) {
             lobbyInterfaceRepository.delete(lobby);
             LobbyHandler.sessions.remove(lobby.getId());
             return null;
         }
 
-        LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.getLobbyPlayers().length - 1];
+        LobbyPlayer[] newLobbyPlayers = new LobbyPlayer[lobby.getPlayers().length - 1];
         String host = null;
 
         int appendIndex = 0;
-        for (int x = 0; x < lobby.getLobbyPlayers().length; x++) {
-            if (lobby.getLobbyPlayers()[x].getId().equals(removingPlayer.getId()))
+        for (int x = 0; x < lobby.getPlayers().length; x++) {
+            if (lobby.getPlayers()[x].getId().equals(removingPlayer.getId()))
                 continue;
 
-            LobbyPlayer next = lobby.getLobbyPlayers()[x];
+            LobbyPlayer next = lobby.getPlayers()[x];
             if (appendIndex == 0) {
                 next.setHost(true);
                 host = next.getId();
@@ -82,7 +82,7 @@ public class LobbyLeaver {
             appendIndex++;
         }
 
-        lobby.setLobbyPlayers(newLobbyPlayers);
+        lobby.setPlayers(newLobbyPlayers);
         lobbyInterfaceRepository.save(lobby);
         return host;
     }
