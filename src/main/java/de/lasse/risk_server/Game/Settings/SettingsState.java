@@ -2,12 +2,9 @@ package de.lasse.risk_server.Game.Settings;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class SettingsState {
 
     @Field("is_fixed")
-    @JsonProperty("is_fixed")
     private boolean isFixed;
 
     public boolean isIsFixed() {

@@ -4,8 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Document(collection = "lobbies")
 public class DisplayLobby {
 
@@ -13,27 +11,21 @@ public class DisplayLobby {
     private String id;
 
     @Field("player_count")
-    @JsonProperty("player_count")
     private int playerCount;
 
     @Field("max_players")
-    @JsonProperty("max_players")
     private int maxPlayers;
 
     @Field("host")
-    @JsonProperty("host")
     private String host;
 
     @Field("turn_timer")
-    @JsonProperty("turn_timer")
     private int turnTimer;
 
     @Field("card_bonus")
-    @JsonProperty("card_bonus")
     private String cardBonus;
 
     @Field("map_id")
-    @JsonProperty("map_id")
     private String mapId;
 
     public String getId() {

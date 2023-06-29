@@ -5,15 +5,12 @@ import java.io.Serializable;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Document(collection = "colors")
 public class Color implements Serializable {
 
     private String name, hex;
 
     @Field("text_color")
-    @JsonProperty("text_color")
     private String textColor;
 
     public Color(String name, String hex, String textColor) {
