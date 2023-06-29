@@ -7,8 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketHelper {
 
-    public static TextMessage generateTextMessage(String event, String str) {
-        return new TextMessage("{\"event\":\"" + event + "\", \"data\":" + str + "}");
+    public static TextMessage generateTextMessage(String event, String data) {
+        return new TextMessage("{\"event\":\"" + event + "\", \"data\":" + data + "}");
+    }
+
+    public static TextMessage generateTextMessage(String event) {
+        return new TextMessage("{\"event\":\"" + event + "\"}");
     }
 
     public static <T> TextMessage generateTextMessage(String event, T obj) throws JsonProcessingException {

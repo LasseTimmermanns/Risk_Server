@@ -2,7 +2,6 @@ package de.lasse.risk_server.Game.Map;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 public interface MapInterfaceRepository extends MongoRepository<Map, String> {
 
