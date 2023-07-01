@@ -2,6 +2,7 @@ package de.lasse.risk_server.Game.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "maps")
 public class Map {
@@ -9,8 +10,13 @@ public class Map {
     @Id
     private String id;
 
-    private int width, height;
+    @Field("svg_width")
+    private int svgWidth;
 
+    @Field("svg_height")
+    private int svgHeight;
+
+    @Field("territories")
     private MapTerritory[] territories;
 
     public String getId() {
@@ -21,20 +27,20 @@ public class Map {
         this.id = id;
     }
 
-    public int getWidth() {
-        return this.width;
+    public int getSvgWidth() {
+        return this.svgWidth;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void setSvgWidth(int svgWidth) {
+        this.svgWidth = svgWidth;
     }
 
-    public int getHeight() {
-        return this.height;
+    public int getSvgHeight() {
+        return this.svgHeight;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void setSvgHeight(int svgHeight) {
+        this.svgHeight = svgHeight;
     }
 
     public MapTerritory[] getTerritories() {

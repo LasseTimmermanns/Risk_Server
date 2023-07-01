@@ -18,16 +18,17 @@ public class MapController {
     @Autowired
     MapInterfaceRepository mapInterfaceRepository;
 
-    @RequestMapping(value = "/maps/{map_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/maps/{mapId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<Map> getMap(@PathVariable String map_id) {
+    public ResponseEntity<Map> getMap(@PathVariable String mapId) {
         try {
-            Map map = mapInterfaceRepository.findMapById(map_id);
+            // Map map = mapInterfaceRepository.findById("classic").orElseThrow();
+            Map map = mapInterfaceRepository.findAll().get(0);
             return new ResponseEntity<Map>(map, HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            System.out.println("Couldnt find " + map_id);
+            e.printStackTrace();
+            System.out.println("Couldnt find " + mapId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
 }
