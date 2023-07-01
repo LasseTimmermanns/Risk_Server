@@ -130,13 +130,13 @@ public class SettingsService {
 
         lobbyInterfaceRepository.delete(lobby);
 
-        // Initialize GameHandler
-        // game.getId() == lobby.getId() but code like this robuster.
-        GameHandler.sessions.put(game.getId(), LobbyHandler.sessions.remove(lobby.getId()));
-
         // Inform Players
         LobbyHandler.broadcast(WebSocketHelper.generateTextMessage("start_game"), lobby.getId());
         System.out.println("Successfully created new Game!");
+
+        // Initialize GameHandler
+        // game.getId() == lobby.getId() but code like this robuster.
+        GameHandler.sessions.put(game.getId(), LobbyHandler.sessions.remove(lobby.getId()));
     }
 
 }
