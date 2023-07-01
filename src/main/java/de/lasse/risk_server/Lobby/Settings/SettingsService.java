@@ -1,12 +1,15 @@
 package de.lasse.risk_server.Lobby.Settings;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
 import de.lasse.risk_server.Game.GameHandler;
 import de.lasse.risk_server.Game.Game.Game;
@@ -128,15 +131,20 @@ public class SettingsService {
         Game game = gameGenerator.generateGame(lobby);
         gameInterfaceRepository.save(game);
 
-        lobbyInterfaceRepository.delete(lobby);
-
         // Inform Players
         LobbyHandler.broadcast(WebSocketHelper.generateTextMessage("start_game"), lobby.getId());
         System.out.println("Successfully created new Game!");
 
-        // Initialize GameHandler
-        // game.getId() == lobby.getId() but code like this robuster.
-        GameHandler.sessions.put(game.getId(), LobbyHandler.sessions.remove(lobby.getId()));
+        // Generate empty session list for GameHandler
+        GameHandler.sessions.put(game.getId(), new ArrayList<WebSocketSession>());
+
+        // Cleanup
+        lobbyInterfaceRepository.delete(lobby);
+
+        List<WebSocketSession> sessions = LobbyHandler.sessions.remove(lobby.getId());
+        for (WebSocketSession session : sessions) {
+            session.close();
+        }
     }
 
 }
