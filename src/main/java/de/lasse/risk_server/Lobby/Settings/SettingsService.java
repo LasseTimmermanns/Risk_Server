@@ -48,7 +48,7 @@ public class SettingsService {
         Lobby lobby = lobbyInterfaceRepository.findById(queryIdentification.roomId).orElseThrow();
         if (!isAuthorized(lobby, queryIdentification.token)) {
             queryIdentification.session.sendMessage(WebSocketHelper.generateDeclineMessage("Not Authorized"));
-            System.out.println("Player not Authorized to change Visibility");
+            System.out.println("Player not Authorized");
             return null;
         }
         return lobby;
