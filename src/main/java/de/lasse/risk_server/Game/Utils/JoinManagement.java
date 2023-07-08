@@ -32,9 +32,10 @@ public class JoinManagement {
             if (!player.getToken().equals(queryIdentification.token))
                 continue;
             GameHandler.sessions.get(queryIdentification.roomId).add(session);
-            session.sendMessage(WebSocketHelper.generateTextMessage("success"));
+            session.sendMessage(WebSocketHelper.generateTextMessage("success", game));
             return;
         }
+
         session.sendMessage(WebSocketHelper.generateDeclineMessage("token not valid"));
     }
 
