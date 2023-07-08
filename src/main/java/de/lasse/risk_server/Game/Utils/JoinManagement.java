@@ -24,6 +24,7 @@ public class JoinManagement {
         Optional<Game> gameOptional = gameInterfaceRepository.findById(queryIdentification.roomId);
         if (gameOptional.isEmpty()) {
             session.sendMessage(WebSocketHelper.generateDeclineMessage("game not found"));
+            session.close();
             return;
         }
 
@@ -37,6 +38,7 @@ public class JoinManagement {
         }
 
         session.sendMessage(WebSocketHelper.generateDeclineMessage("token not valid"));
+        session.close();
     }
 
 }
