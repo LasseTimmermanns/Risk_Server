@@ -1,6 +1,7 @@
 package de.lasse.risk_server.Game.Utils;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class JoinManagement {
             if (!player.getToken().equals(queryIdentification.token))
                 continue;
             GameHandler.sessions.get(queryIdentification.roomId).add(session);
+            session.sendMessage(WebSocketHelper.generateTextMessage("playerId", Map.of("playerId", player.getId())));
             session.sendMessage(WebSocketHelper.generateTextMessage("success", game));
             return;
         }

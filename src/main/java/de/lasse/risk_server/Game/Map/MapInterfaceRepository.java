@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface MapInterfaceRepository extends MongoRepository<Map, String> {
 
-    @Query(value = "{ '_id' : ?0 }", fields = "{'_id' : 1, 'svg_width' : 1, 'svg_height': 1, 'territories': 1}")
+    @Query(value = "{ '_id' : ?0 }", fields = "{'_id' : 1, 'svg_width' : 1, 'svg_height': 1, 'territories': 1, 'continents': 1}")
     public Optional<Map> findById(String id);
 
     @Aggregation(pipeline = {

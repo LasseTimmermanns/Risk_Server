@@ -58,20 +58,20 @@ public class LobbyHandler extends TextWebSocketHandler {
         String playername = QueryUtil.getQueryValue("playername", session.getUri().getQuery());
 
         if (lobbyId == null || playername == null) {
-            session.sendMessage(WebSocketHelper.generateDeclineMessage("Not enough data provided"));
+            session.sendMessage(WebSocketHelper.generateForbidMessage());
             session.close();
             return;
         }
 
         Lobby lobby = lobbyInterfaceRepository.findById(lobbyId).orElse(null);
         if (lobby == null || !sessions.containsKey(lobbyId)) {
-            session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby not found"));
+            session.sendMessage(WebSocketHelper.generateForbidMessage());
             session.close();
             return;
         }
 
         if (lobby.getPlayers().length >= lobby.getMaxPlayers()) {
-            session.sendMessage(WebSocketHelper.generateDeclineMessage("Lobby is full"));
+            session.sendMessage(WebSocketHelper.generateForbidMessage());
             session.close();
             return;
         }

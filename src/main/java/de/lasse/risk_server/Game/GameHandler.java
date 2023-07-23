@@ -1,5 +1,6 @@
 package de.lasse.risk_server.Game;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.lasse.risk_server.Game.Game.GameInterfaceRepository;
+import de.lasse.risk_server.Game.GameAction.GameActionHandler;
 import de.lasse.risk_server.Game.Utils.JoinManagement;
 import de.lasse.risk_server.Shared.QueryIdentification;
 
@@ -25,6 +27,9 @@ public class GameHandler extends TextWebSocketHandler {
 
     @Autowired
     JoinManagement joinManagement;
+
+    @Autowired
+    GameActionHandler gameActionHandler;
 
     public static HashMap<String, List<WebSocketSession>> sessions = new HashMap<String, List<WebSocketSession>>();
 
@@ -52,6 +57,9 @@ public class GameHandler extends TextWebSocketHandler {
                 case "join":
                     joinManagement.join(queryIdentification, session);
                     break;
+                case "gameaction":
+                    gameActionHandler.action(message_json, queryIdentification, session);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,5 +68,15 @@ public class GameHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    }
+
+    public static void broadcast(TextMessage message, String gameId) {
+        for (WebSocketSession session : sessions.get(gameId)) {
+            try {
+                session.sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

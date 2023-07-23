@@ -22,8 +22,7 @@ public class MapController {
     @ResponseBody
     public ResponseEntity<Map> getMap(@PathVariable String mapId) {
         try {
-            // Map map = mapInterfaceRepository.findById("classic").orElseThrow();
-            Map map = mapInterfaceRepository.findAll().get(0);
+            Map map = mapInterfaceRepository.findById(mapId).orElseThrow();
             return new ResponseEntity<Map>(map, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();

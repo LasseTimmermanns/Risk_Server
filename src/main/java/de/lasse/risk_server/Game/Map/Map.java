@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import de.lasse.risk_server.Game.Continent.Continent;
+
 @Document(collection = "maps")
 public class Map {
 
@@ -18,6 +20,9 @@ public class Map {
 
     @Field("territories")
     private MapTerritory[] territories;
+
+    @Field("continents")
+    private Continent[] continents;
 
     public String getId() {
         return this.id;
@@ -49,6 +54,14 @@ public class Map {
 
     public void setTerritories(MapTerritory[] territories) {
         this.territories = territories;
+    }
+
+    public Continent[] getContinents() {
+        return this.continents;
+    }
+
+    public void setContinents(Continent[] continents) {
+        this.continents = continents;
     }
 
 }

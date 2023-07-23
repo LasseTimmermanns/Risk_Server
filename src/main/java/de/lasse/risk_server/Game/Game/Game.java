@@ -23,8 +23,11 @@ public class Game {
     @Field("territories")
     public GameTerritory[] territories;
 
-    @Field("move")
-    private int move;
+    @Field("turn")
+    private int turn;
+
+    @Field("phase")
+    private int phase;
 
     @Field("settings")
     private SettingsState settings;
@@ -61,12 +64,12 @@ public class Game {
         this.territories = territories;
     }
 
-    public int getMove() {
-        return this.move;
+    public int getTurn() {
+        return this.turn;
     }
 
-    public void setMove(int move) {
-        this.move = move;
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 
     public SettingsState getSettings() {
@@ -77,13 +80,22 @@ public class Game {
         this.settings = settings;
     }
 
-    public Game(String id, String mapId, Player[] players, GameTerritory[] territories, int move,
+    public int getPhase() {
+        return this.phase;
+    }
+
+    public void setPhase(int phase) {
+        this.phase = phase;
+    }
+
+    public Game(String id, String mapId, Player[] players, GameTerritory[] territories, int turn, int phase,
             SettingsState settings) {
         this.id = id;
         this.mapId = mapId;
         this.players = players;
         this.territories = territories;
-        this.move = move;
+        this.turn = turn;
+        this.phase = phase;
         this.settings = settings;
     }
 

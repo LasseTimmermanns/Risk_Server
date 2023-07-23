@@ -1,6 +1,7 @@
 package de.lasse.risk_server.Game.Players;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import de.lasse.risk_server.Shared.Color.Color;
 
@@ -18,6 +19,9 @@ public class Player {
     private int seat;
 
     private int[] cards;
+
+    @Field("deployment_left")
+    private int deploymentLeft;
 
     public int[] getCards() {
         return this.cards;
@@ -67,13 +71,22 @@ public class Player {
         this.seat = seat;
     }
 
-    public Player(String id, String token, String name, Color color, int seat, int[] cards) {
+    public int getDeploymentLeft() {
+        return this.deploymentLeft;
+    }
+
+    public void setDeploymentLeft(int deploymentLeft) {
+        this.deploymentLeft = deploymentLeft;
+    }
+
+    public Player(String id, String token, String name, Color color, int seat, int[] cards, int deploymentLeft) {
         this.id = id;
         this.token = token;
         this.name = name;
         this.color = color;
         this.seat = seat;
         this.cards = cards;
+        this.deploymentLeft = deploymentLeft;
     }
 
 }

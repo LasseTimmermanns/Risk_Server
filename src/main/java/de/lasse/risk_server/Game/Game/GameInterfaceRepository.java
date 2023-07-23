@@ -12,7 +12,7 @@ public interface GameInterfaceRepository extends MongoRepository<Game, String> {
     @Query(value = "{ '_id': ?0 }", fields = "{'players': 1}")
     public Optional<Game> findPlayersByGameId(String id);
 
-    @Query(value = "{ '_id': ?0 }", fields = "{'_id': 1, 'players': 1, 'territories': 1, 'settings': 1, 'move': 1}")
+    @Query(value = "{ '_id': ?0 }", fields = "{'_id': 1, 'players': 1, 'territories': 1, 'settings': 1, 'turn': 1}")
     public Optional<Game> findStartingGameInformationById();
 
 }

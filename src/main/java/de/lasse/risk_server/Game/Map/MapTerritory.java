@@ -13,6 +13,12 @@ public class MapTerritory {
     @Field("id")
     public int id;
 
+    @Field("center_x")
+    public int centerX;
+
+    @Field("center_y")
+    public int centerY;
+
     @Field("borders")
     public int[] borders;
 

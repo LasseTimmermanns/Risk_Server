@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import de.lasse.risk_server.Game.Map.MapInterfaceRepository;
 import de.lasse.risk_server.Game.Players.Player;
 import de.lasse.risk_server.Game.Settings.SettingsState;
+import de.lasse.risk_server.Game.Shape.ShapeInterfaceRepository;
 import de.lasse.risk_server.Game.Territory.GameTerritory;
 import de.lasse.risk_server.Lobby.Lobby.Lobby;
 import de.lasse.risk_server.Lobby.LobbyPlayer.LobbyPlayer;
@@ -23,15 +24,18 @@ public class GameGenerator {
     @Autowired
     MapInterfaceRepository mapInterfaceRepository;
 
+    @Autowired
+    ShapeInterfaceRepository shapeInterfaceRepository;
+
     public Game generateGame(Lobby lobby) {
         String gameId = lobby.getId();
         String mapId = lobby.getMapId();
-        int move = 0;
+        int turn = 0, phase = 0;
         SettingsState settingsState = new SettingsState(lobby.isFixed());
         Player[] players = getPlayers(lobby.getPlayers());
         GameTerritory[] territories = generateTerritories(players, mapId);
 
-        return new Game(gameId, mapId, players, territories, move, settingsState);
+        return new Game(gameId, mapId, players, territories, turn, phase, settingsState);
     }
 
     private List<Integer> generateRandomOrder(int range) {
@@ -43,6 +47,7 @@ public class GameGenerator {
     private Player[] getPlayers(LobbyPlayer[] lobbyPlayers) {
         Player[] out = new Player[lobbyPlayers.length];
         List<Integer> order = generateRandomOrder(lobbyPlayers.length);
+
         for (int i = 0; i < lobbyPlayers.length; i++) {
             LobbyPlayer p = lobbyPlayers[order.get(i)];
 
@@ -51,10 +56,12 @@ public class GameGenerator {
             String name = p.getName();
             Color color = p.getColor();
             int seat = order.get(i);
+            int deploymentLeft = 0;
 
-            out[i] = new Player(id, token, name, color, seat, new int[0]);
+            out[i] = new Player(id, token, name, color, seat, new int[0], deploymentLeft);
         }
 
+        Arrays.sort(out, (p1, p2) -> Integer.compare(p1.getSeat(), p2.getSeat()));
         return out;
     }
 

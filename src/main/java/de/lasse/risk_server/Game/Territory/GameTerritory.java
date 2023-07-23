@@ -1,28 +1,25 @@
 package de.lasse.risk_server.Game.Territory;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class GameTerritory {
 
-    @Field("territory_id")
-    public int territoryId;
+    public int id;
 
     public int troops;
 
     public String owner;
 
-    public GameTerritory(int territoryId, int troops, String owner) {
-        this.territoryId = territoryId;
+    public GameTerritory(int id, int troops, String owner) {
+        this.id = id;
         this.troops = troops;
         this.owner = owner;
     }
 
-    public int getTerritoryId() {
-        return this.territoryId;
+    public int getId() {
+        return this.id;
     }
 
-    public void setTerritoryId(int territoryId) {
-        this.territoryId = territoryId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getTroops() {
