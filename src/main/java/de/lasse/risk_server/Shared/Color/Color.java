@@ -5,26 +5,31 @@ import java.io.Serializable;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import nonapi.io.github.classgraph.json.Id;
+
 @Document(collection = "colors")
 public class Color implements Serializable {
 
-    private String name, hex;
+    @Id
+    private String id;
+
+    private String hex;
 
     @Field("text_color")
     private String textColor;
 
-    public Color(String name, String hex, String textColor) {
-        this.name = name;
-        this.hex = hex;
-        this.textColor = textColor;
+    @Field("secondary_hex")
+    private String secondaryHex;
+
+    @Field("highlight_hex")
+    private String highlightHex;
+
+    public String getId() {
+        return this.id;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getHex() {
@@ -41,6 +46,22 @@ public class Color implements Serializable {
 
     public void setTextColor(String textColor) {
         this.textColor = textColor;
+    }
+
+    public String getSecondaryHex() {
+        return this.secondaryHex;
+    }
+
+    public void setSecondaryHex(String secondaryHex) {
+        this.secondaryHex = secondaryHex;
+    }
+
+    public String getHighlightHex() {
+        return this.highlightHex;
+    }
+
+    public void setHighlightHex(String highlightHex) {
+        this.highlightHex = highlightHex;
     }
 
 }

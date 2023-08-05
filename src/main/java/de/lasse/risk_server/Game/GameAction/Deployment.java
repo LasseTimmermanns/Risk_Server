@@ -2,15 +2,15 @@ package de.lasse.risk_server.Game.GameAction;
 
 public class Deployment {
 
-    public int toId;
+    public int territoryId;
     public int amount;
 
-    public int getToId() {
-        return this.toId;
+    public int getTerritoryId() {
+        return this.territoryId;
     }
 
-    public void setToId(int toId) {
-        this.toId = toId;
+    public void setTerritoryId(int toId) {
+        this.territoryId = toId;
     }
 
     public int getAmount() {

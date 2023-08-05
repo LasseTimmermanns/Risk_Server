@@ -27,11 +27,11 @@ public class WebSocketHelper {
     }
 
     public static TextMessage generateGameActionMessage(String action) {
-        return new TextMessage("{\"event\": gameaction, \"action\":\"" + action + "\"}");
+        return new TextMessage("{\"event\": \"gameaction\", \"action\":\"" + action + "\"}");
     }
 
     private static TextMessage generateGameActionMessage(String action, String data) {
-        return new TextMessage("{\"event\": gameaction, \"action\":\"" + action + "\", \"data\":" + data + "}");
+        return new TextMessage("{\"event\": \"gameaction\", \"action\":\"" + action + "\", \"data\":" + data + "}");
     }
 
     public static <T> TextMessage generateGameActionMessage(String action, T obj) {

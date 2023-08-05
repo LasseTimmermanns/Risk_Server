@@ -7,11 +7,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import de.lasse.risk_server.Game.Map.MapInterfaceRepository;
 import de.lasse.risk_server.Game.Players.Player;
 import de.lasse.risk_server.Game.Settings.SettingsState;
+import de.lasse.risk_server.Game.Shape.Shape;
 import de.lasse.risk_server.Game.Shape.ShapeInterfaceRepository;
 import de.lasse.risk_server.Game.Territory.GameTerritory;
 import de.lasse.risk_server.Lobby.Lobby.Lobby;
@@ -48,6 +51,9 @@ public class GameGenerator {
         Player[] out = new Player[lobbyPlayers.length];
         List<Integer> order = generateRandomOrder(lobbyPlayers.length);
 
+        Pageable pageable = PageRequest.of(0, lobbyPlayers.length);
+        List<Shape> shapes = shapeInterfaceRepository.findLimited(pageable);
+
         for (int i = 0; i < lobbyPlayers.length; i++) {
             LobbyPlayer p = lobbyPlayers[order.get(i)];
 
@@ -58,7 +64,7 @@ public class GameGenerator {
             int seat = order.get(i);
             int deploymentLeft = 0;
 
-            out[i] = new Player(id, token, name, color, seat, new int[0], deploymentLeft);
+            out[i] = new Player(id, token, name, color, shapes.get(i), seat, new int[0], deploymentLeft);
         }
 
         Arrays.sort(out, (p1, p2) -> Integer.compare(p1.getSeat(), p2.getSeat()));

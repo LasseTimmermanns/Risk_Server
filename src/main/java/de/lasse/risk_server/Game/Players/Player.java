@@ -3,6 +3,7 @@ package de.lasse.risk_server.Game.Players;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import de.lasse.risk_server.Game.Shape.Shape;
 import de.lasse.risk_server.Shared.Color.Color;
 
 public class Player {
@@ -15,6 +16,8 @@ public class Player {
     private String name;
 
     private Color color;
+
+    private Shape shape;
 
     private int seat;
 
@@ -79,11 +82,21 @@ public class Player {
         this.deploymentLeft = deploymentLeft;
     }
 
-    public Player(String id, String token, String name, Color color, int seat, int[] cards, int deploymentLeft) {
+    public Shape getShape() {
+        return this.shape;
+    }
+
+    public void setShape(Shape shape) {
+        this.shape = shape;
+    }
+
+    public Player(String id, String token, String name, Color color, Shape shape, int seat, int[] cards,
+            int deploymentLeft) {
         this.id = id;
         this.token = token;
         this.name = name;
         this.color = color;
+        this.shape = shape;
         this.seat = seat;
         this.cards = cards;
         this.deploymentLeft = deploymentLeft;

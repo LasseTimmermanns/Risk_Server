@@ -3,6 +3,7 @@ package de.lasse.risk_server.Game;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,10 @@ public class GameHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        for (Entry<String, List<WebSocketSession>> gameEntry : GameHandler.sessions.entrySet()) {
+            List<WebSocketSession> gameSessions = gameEntry.getValue();
+            gameSessions.remove(session);
+        }
     }
 
     public static void broadcast(TextMessage message, String gameId) {

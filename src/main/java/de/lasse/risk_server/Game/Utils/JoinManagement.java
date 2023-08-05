@@ -11,7 +11,10 @@ import org.springframework.web.socket.WebSocketSession;
 import de.lasse.risk_server.Game.GameHandler;
 import de.lasse.risk_server.Game.Game.Game;
 import de.lasse.risk_server.Game.Game.GameInterfaceRepository;
+import de.lasse.risk_server.Game.GameAction.GameActionHandler;
+import de.lasse.risk_server.Game.Map.MapInterfaceRepository;
 import de.lasse.risk_server.Game.Players.Player;
+import de.lasse.risk_server.Game.Shape.ShapeInterfaceRepository;
 import de.lasse.risk_server.Shared.QueryIdentification;
 import de.lasse.risk_server.Shared.WebSocketHelper;
 
@@ -20,6 +23,15 @@ public class JoinManagement {
 
     @Autowired
     GameInterfaceRepository gameInterfaceRepository;
+
+    @Autowired
+    MapInterfaceRepository mapInterfaceRepository;
+
+    @Autowired
+    ShapeInterfaceRepository shapeInterfaceRepository;
+
+    @Autowired
+    GameActionHandler gameActionHandler;
 
     public void join(QueryIdentification queryIdentification, WebSocketSession session) throws IOException {
         Optional<Game> gameOptional = gameInterfaceRepository.findById(queryIdentification.roomId);
@@ -34,8 +46,12 @@ public class JoinManagement {
             if (!player.getToken().equals(queryIdentification.token))
                 continue;
             GameHandler.sessions.get(queryIdentification.roomId).add(session);
-            session.sendMessage(WebSocketHelper.generateTextMessage("playerId", Map.of("playerId", player.getId())));
-            session.sendMessage(WebSocketHelper.generateTextMessage("success", game));
+            de.lasse.risk_server.Game.Map.Map map = mapInterfaceRepository.findById(game.getMapId()).orElseThrow();
+
+            session.sendMessage(
+                    WebSocketHelper.generateTextMessage("success",
+                            Map.of("playerId", player.getId(), "game", game, "map", map)));
+
             return;
         }
 

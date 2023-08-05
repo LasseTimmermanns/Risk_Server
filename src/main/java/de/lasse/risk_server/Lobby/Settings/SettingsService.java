@@ -15,6 +15,7 @@ import de.lasse.risk_server.Game.GameHandler;
 import de.lasse.risk_server.Game.Game.Game;
 import de.lasse.risk_server.Game.Game.GameGenerator;
 import de.lasse.risk_server.Game.Game.GameInterfaceRepository;
+import de.lasse.risk_server.Game.GameAction.GameActionHandler;
 import de.lasse.risk_server.Lobby.LobbyHandler;
 import de.lasse.risk_server.Lobby.Lobby.Lobby;
 import de.lasse.risk_server.Lobby.Lobby.LobbyInterfaceRepository;
@@ -36,6 +37,9 @@ public class SettingsService {
 
     @Autowired
     GameGenerator gameGenerator;
+
+    @Autowired
+    GameActionHandler gameActionHandler;
 
     public boolean isAuthorized(Lobby lobby, String token) {
         Optional<LobbyPlayer> player = Arrays.stream(lobby.getPlayers())
@@ -145,6 +149,8 @@ public class SettingsService {
         for (WebSocketSession session : sessions) {
             session.close();
         }
+
+        gameActionHandler.beginDeployment(game);
     }
 
 }

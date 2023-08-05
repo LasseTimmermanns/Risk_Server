@@ -19,6 +19,12 @@ public class MapTerritory {
     @Field("center_y")
     public int centerY;
 
+    @Field("target_x")
+    public int targetX;
+
+    @Field("target_y")
+    public int targetY;
+
     @Field("borders")
     public int[] borders;
 
@@ -59,6 +65,38 @@ public class MapTerritory {
 
     public void setBorders(int[] borders) {
         this.borders = borders;
+    }
+
+    public int getCenterX() {
+        return this.centerX;
+    }
+
+    public void setCenterX(int centerX) {
+        this.centerX = centerX;
+    }
+
+    public int getCenterY() {
+        return this.centerY;
+    }
+
+    public void setCenterY(int centerY) {
+        this.centerY = centerY;
+    }
+
+    public int getTargetX() {
+        return this.targetX;
+    }
+
+    public void setTargetX(int targetX) {
+        this.targetX = targetX;
+    }
+
+    public int getTargetY() {
+        return this.targetY;
+    }
+
+    public void setTargetY(int targetY) {
+        this.targetY = targetY;
     }
 
 }
